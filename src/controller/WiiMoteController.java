@@ -128,7 +128,6 @@ public class WiiMoteController implements WiimoteListener {
 	@Override
 	public void onIrEvent(IREvent arg0) {
 		irlights = (arg0.getIRPoints());
-		System.out.println(arg0.getIRPoints().length);
 	}
 
 	public IRSource[] getIrlights() {
@@ -140,7 +139,8 @@ public class WiiMoteController implements WiimoteListener {
 	}
 
 	public int getAmount() {
-		return amount;
+		//return amount;
+		return getIrlights().length;
 	}
 
 	public void setAmount(int a_amount) {
