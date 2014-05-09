@@ -67,7 +67,7 @@ public class WiiMoteController implements WiimoteListener {
 				wiimotes[i].activateContinuous();
 				wiimotes[i].addWiiMoteEventListeners(this);
 				wiimotes[i].setIrSensitivity(99);
-				getPlayers().add(new Player());				
+				players.add(new Player());				
 			}
 		}
 
@@ -84,29 +84,29 @@ public class WiiMoteController implements WiimoteListener {
 			switch(player)
 			{
 			case 1: 
-				if(getPlayers().get(0).getBullets() > 0)
+				if(players.get(0).getBullets() > 0)
 				{
 					model.playShot();
-					getPlayers().get(0).shot();
+					players.get(0).shot();
+					System.out.println("BULLETSSS:    " + players.get(0).getBullets() + "-------------");
 				}				
-				if(getPlayers().get(0).getAmountIR() > 1)
-				{
-					getPlayers().get(0).setScore(getPlayers().get(0).getScore() + 1);
-					getPlayers().get(0).hit();
-				}
+				if(players.get(0).getAmountIR() > 1)
+					players.get(0).setScore(players.get(0).getScore() + 1);
 				break;
 
 			case 2: 
-				if(getPlayers().get(1).getBullets() > 0)
+				if(players.get(1).getBullets() > 0)
 				{
 					model.playShot();
-					getPlayers().get(1).shot();
+					players.get(1).shot();
+<<<<<<< HEAD
 				}
-				if(getPlayers().get(1).getAmountIR() > 1)
-				{
-					getPlayers().get(1).setScore(getPlayers().get(1).getScore() + 1);
-					getPlayers().get(1).hit();
-				}
+=======
+				System.out.println("BULLETSSS:    " + players.get(1).getBullets() + "-------------");
+>>>>>>> 58379fa438df38ffb13b7b3d5e8e8309acaeb7c3
+				if(players.get(1).getAmountIR() > 1)
+					players.get(1).setScore(players.get(1).getScore() + 1);
+				System.out.println("BULLETSSS:    " + players.get(1).getBullets() + "-------------");
 				break;			
 			}
 		}
@@ -117,32 +117,16 @@ public class WiiMoteController implements WiimoteListener {
 		
 	}
 
-	public int getScore(int player)
+	public int getScoreP1()
 	{
 		try{
-		return getPlayers().get(player-1).getScore();}
+		return players.get(0).getScore();}
 		catch(Exception e){return 0;}
 	}
-	
-	public double getAccuracy(int player)
-	{
-		try{
-			return getPlayers().get(player-1).getAccuracy();}
-			catch(Exception e){return 0;}	
-	}
-	
-	public int getHits(int player)
-	{
-		try{
-			return getPlayers().get(player-1).getHit();}
-			catch(Exception e){return 0;}
-	}
-	
-	public int getShots(int player)
-	{
-		try{
-			return getPlayers().get(player-1).getShots();}
-			catch(Exception e){return 0;}
+	public int getScoreP2()
+	{	try{
+		return players.get(1).getScore();}
+		catch(Exception e){return 0;}
 	}
 
 	@Override
@@ -188,12 +172,12 @@ public class WiiMoteController implements WiimoteListener {
 		int player = arg0.getWiimoteId();			
 		switch(player)
 		{
-		case 1: getPlayers().get(0).setAmountIR(arg0.getIRPoints().length);
-		getPlayers().get(0).setIrsource(arg0.getIRPoints());
+		case 1: players.get(0).setAmountIR(arg0.getIRPoints().length);
+		players.get(0).setIrsource(arg0.getIRPoints());
 		break;
 
-		case 2: getPlayers().get(1).setAmountIR(arg0.getIRPoints().length);
-		getPlayers().get(1).setIrsource(arg0.getIRPoints());
+		case 2: players.get(1).setAmountIR(arg0.getIRPoints().length);
+		players.get(1).setIrsource(arg0.getIRPoints());
 		break;
 
 		default: break;
@@ -202,19 +186,19 @@ public class WiiMoteController implements WiimoteListener {
 
 	public IRSource[] getIrlightsP1() {
 		try{
-		return getPlayers().get(0).getIrsource();}
+		return players.get(0).getIrsource();}
 		catch(Exception e){return null;}
 	}
 	public IRSource[] getIrlightsP2() {
 		try{
-		return getPlayers().get(1).getIrsource();}
+		return players.get(1).getIrsource();}
 		catch(Exception e){return null;}
 	}
 
 
 	public int getAmountP1() {
 		try{
-			return getPlayers().get(0).getIrsource().length;
+			return players.get(0).getIrsource().length;
 		}
 		catch(Exception e)
 		{
@@ -224,7 +208,7 @@ public class WiiMoteController implements WiimoteListener {
 
 	public int getAmountP2() {
 		try{
-			return getPlayers().get(0).getIrsource().length;
+			return players.get(0).getIrsource().length;
 		}
 		catch(Exception e)
 		{
@@ -322,14 +306,6 @@ public class WiiMoteController implements WiimoteListener {
 	 */
 	public void setY(int a_y) {
 		y = a_y;
-	}
-
-	public ArrayList<Player> getPlayers() {
-		return players;
-	}
-
-	public void setPlayers(ArrayList<Player> players) {
-		this.players = players;
 	}
 
 
