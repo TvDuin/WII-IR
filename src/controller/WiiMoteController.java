@@ -27,7 +27,6 @@ import wiiusej.wiiusejevents.wiiuseapievents.NunchukInsertedEvent;
 import wiiusej.wiiusejevents.wiiuseapievents.NunchukRemovedEvent;
 import wiiusej.wiiusejevents.wiiuseapievents.StatusEvent;
 
-@SuppressWarnings("restriction")
 public class WiiMoteController implements WiimoteListener {
 
 	private WiiMoteModel model;
@@ -38,9 +37,6 @@ public class WiiMoteController implements WiimoteListener {
 	private Orientation orientation;
 	private int x;
 	private int y;
-	private int amount;
-	private IRSource[] irlightsP1, irlightsP2;
-	private int scoreP1, scoreP2;
 	private ArrayList<Player> players = new ArrayList<Player>();
 
 	public WiiMoteController() {
@@ -98,9 +94,13 @@ public class WiiMoteController implements WiimoteListener {
 
 			case 2: 
 				if(players.get(1).getBullets() > 0)
+				{
 					model.playShot();
+					players.get(1).shot();
+				}
 				if(players.get(1).getAmountIR() > 1)
 					players.get(1).setScore(players.get(1).getScore() + 1);
+				System.out.println("BULLETSSS:    " + players.get(1).getBullets() + "-------------");
 				break;			
 			}
 		}	
@@ -109,11 +109,14 @@ public class WiiMoteController implements WiimoteListener {
 
 	public int getScoreP1()
 	{
-		return players.get(0).getScore();
+		try{
+		return players.get(0).getScore();}
+		catch(Exception e){return 0;}
 	}
 	public int getScoreP2()
-	{
-		return players.get(1).getScore();
+	{	try{
+		return players.get(1).getScore();}
+		catch(Exception e){return 0;}
 	}
 
 	@Override
@@ -172,10 +175,14 @@ public class WiiMoteController implements WiimoteListener {
 	}
 
 	public IRSource[] getIrlightsP1() {
-		return players.get(0).getIrsource();
+		try{
+		return players.get(0).getIrsource();}
+		catch(Exception e){return null;}
 	}
 	public IRSource[] getIrlightsP2() {
-		return players.get(1).getIrsource();
+		try{
+		return players.get(1).getIrsource();}
+		catch(Exception e){return null;}
 	}
 
 
