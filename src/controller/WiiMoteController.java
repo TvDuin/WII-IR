@@ -38,6 +38,7 @@ public class WiiMoteController implements WiimoteListener {
 	private int x;
 	private int y;
 	private ArrayList<Player> players = new ArrayList<Player>();
+	private boolean buttonPressed;
 
 	public WiiMoteController() {
 		this.model = new WiiMoteModel();
@@ -77,8 +78,9 @@ public class WiiMoteController implements WiimoteListener {
 	public void onButtonsEvent(WiimoteButtonsEvent arg0) 
 	{
 		int player = arg0.getWiimoteId();
-		if(arg0.isButtonBJustPressed())
+		if(arg0.isButtonBJustPressed() && !buttonPressed)
 		{
+			buttonPressed = true;
 			switch(player)
 			{
 			case 1: 
@@ -97,13 +99,17 @@ public class WiiMoteController implements WiimoteListener {
 				{
 					model.playShot();
 					players.get(1).shot();
-				}
+				System.out.println("BULLETSSS:    " + players.get(1).getBullets() + "-------------");
 				if(players.get(1).getAmountIR() > 1)
 					players.get(1).setScore(players.get(1).getScore() + 1);
 				System.out.println("BULLETSSS:    " + players.get(1).getBullets() + "-------------");
 				break;			
 			}
-		}	
+		}
+		if(arg0.isButtonBJustReleased())
+		{
+			buttonPressed = false;
+		}
 		
 	}
 
