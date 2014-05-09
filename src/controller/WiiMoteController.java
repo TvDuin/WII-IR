@@ -1,24 +1,21 @@
 package controller;
 
-import java.awt.Color;
-import java.awt.Point;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.io.File;
 import java.util.ArrayList;
-import java.util.Random;
 
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+
+import model.Player;
 import model.WiiMoteModel;
-import view.WiiMoteView;
 import wiiusej.WiiUseApiManager;
 import wiiusej.Wiimote;
-import wiiusej.utils.NunchukJoystickEventPanel;
 import wiiusej.values.IRSource;
 import wiiusej.values.Orientation;
 import wiiusej.wiiusejevents.physicalevents.ExpansionEvent;
 import wiiusej.wiiusejevents.physicalevents.IREvent;
-import wiiusej.wiiusejevents.physicalevents.JoystickEvent;
 import wiiusej.wiiusejevents.physicalevents.MotionSensingEvent;
-import wiiusej.wiiusejevents.physicalevents.NunchukEvent;
 import wiiusej.wiiusejevents.physicalevents.WiimoteButtonsEvent;
 import wiiusej.wiiusejevents.utils.WiimoteListener;
 import wiiusej.wiiusejevents.wiiuseapievents.ClassicControllerInsertedEvent;
@@ -30,6 +27,7 @@ import wiiusej.wiiusejevents.wiiuseapievents.NunchukInsertedEvent;
 import wiiusej.wiiusejevents.wiiuseapievents.NunchukRemovedEvent;
 import wiiusej.wiiusejevents.wiiuseapievents.StatusEvent;
 
+@SuppressWarnings("restriction")
 public class WiiMoteController implements WiimoteListener {
 
 	private WiiMoteModel model;
@@ -41,14 +39,17 @@ public class WiiMoteController implements WiimoteListener {
 	private int x;
 	private int y;
 	private int amount;
-	private IRSource[] irlights;
-	
+	private IRSource[] irlightsP1, irlightsP2;
+	private int scoreP1, scoreP2;
+	private ArrayList<Player> players = new ArrayList<Player>();
+
 	public WiiMoteController() {
-		this.model = model;
+		this.model = new WiiMoteModel();
+
 
 		// init WiiMote
 		// 
-		wiimotes = WiiUseApiManager.getWiimotes(1, true);
+		wiimotes = WiiUseApiManager.getWiimotes(2, true);
 		if(wiimotes != null)
 		{
 			try{
@@ -56,36 +57,63 @@ public class WiiMoteController implements WiimoteListener {
 				wiimote.setLeds(true, false, false, false);
 				wiimote.activateIRTRacking();
 				wiimote.addWiiMoteEventListeners(this);
-
-				// Set IR sensivity stuff
-				wiimote.setIrSensitivity(0);
-				wiimote.setIrSensitivity(3);
 			}
 			catch(Exception e)
 			{
 
 			}
+
+			for(int i=0; i<wiimotes.length; i++)
+			{
+				wiimotes[i].activateIRTRacking();
+				wiimotes[i].activateSmoothing();
+				wiimotes[i].activateContinuous();
+				wiimotes[i].addWiiMoteEventListeners(this);
+				wiimotes[i].setIrSensitivity(99);
+				players.add(new Player());				
+			}
 		}
+
 
 	}
 
 	@Override
 	public void onButtonsEvent(WiimoteButtonsEvent arg0) 
 	{
-		if(arg0.isButtonBPressed())
+		int player = arg0.getWiimoteId();
+		if(arg0.isButtonBJustPressed())
 		{
-			wiimotes[0].activateRumble();
-			try 
+			switch(player)
 			{
-				Thread.sleep(100);
-				wiimotes[0].deactivateRumble();
-			} 
-			catch(Exception e)
-			{
-				e.printStackTrace();
+			case 1: 
+				if(players.get(0).getBullets() > 0)
+				{
+					model.playShot();
+					players.get(0).shot();
+					System.out.println("BULLETSSS:    " + players.get(0).getBullets() + "-------------");
+				}				
+				if(players.get(0).getAmountIR() > 1)
+					players.get(0).setScore(players.get(0).getScore() + 1);
+				break;
+
+			case 2: 
+				if(players.get(1).getBullets() > 0)
+					model.playShot();
+				if(players.get(1).getAmountIR() > 1)
+					players.get(1).setScore(players.get(1).getScore() + 1);
+				break;			
 			}
-		}
+		}	
 		
+	}
+
+	public int getScoreP1()
+	{
+		return players.get(0).getScore();
+	}
+	public int getScoreP2()
+	{
+		return players.get(1).getScore();
 	}
 
 	@Override
@@ -127,24 +155,48 @@ public class WiiMoteController implements WiimoteListener {
 
 	@Override
 	public void onIrEvent(IREvent arg0) {
-		irlights = (arg0.getIRPoints());
+
+		int player = arg0.getWiimoteId();			
+		switch(player)
+		{
+		case 1: players.get(0).setAmountIR(arg0.getIRPoints().length);
+		players.get(0).setIrsource(arg0.getIRPoints());
+		break;
+
+		case 2: players.get(1).setAmountIR(arg0.getIRPoints().length);
+		players.get(1).setIrsource(arg0.getIRPoints());
+		break;
+
+		default: break;
+		}
 	}
 
-	public IRSource[] getIrlights() {
-		return irlights;
+	public IRSource[] getIrlightsP1() {
+		return players.get(0).getIrsource();
+	}
+	public IRSource[] getIrlightsP2() {
+		return players.get(1).getIrsource();
 	}
 
-	public void setIrlights(IRSource[] a_irlights) {
-		irlights = a_irlights;
+
+	public int getAmountP1() {
+		try{
+			return players.get(0).getIrsource().length;
+		}
+		catch(Exception e)
+		{
+			return 0;
+		}
 	}
 
-	public int getAmount() {
-		//return amount;
-		return getIrlights().length;
-	}
-
-	public void setAmount(int a_amount) {
-		amount = a_amount;
+	public int getAmountP2() {
+		try{
+			return players.get(0).getIrsource().length;
+		}
+		catch(Exception e)
+		{
+			return 0;
+		}
 	}
 
 	@Override

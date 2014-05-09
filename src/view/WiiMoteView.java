@@ -15,6 +15,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 import javax.swing.JPanel;
+import javax.swing.Timer;
 
 import controller.WiiMoteController;
 import wiiusej.values.IRSource;
@@ -32,6 +33,8 @@ public class WiiMoteView extends JPanel implements ActionListener, KeyListener  
 		this.controller = controller;
 		this.addKeyListener(this);
 		this.setBackground(Color.white);
+		Timer timer = new Timer(1000/60, this);
+		timer.start();
 	}
 
 	// Called by 
@@ -45,11 +48,15 @@ public class WiiMoteView extends JPanel implements ActionListener, KeyListener  
 //		g2.setPaint(new GradientPaint(new Point2D.Double(0, 0), Color.magenta, new Point2D.Double(960, 540), Color.orange));
 		g2.drawLine(960, 100, 960, 980);
 		g2.drawLine(100, 540, 1820, 540);
-		g2.drawString("leds : " + controller.getAmount(), 10, 10);
-		if(controller.getIrlights() != null)
+		g2.drawString("leds : " + controller.getAmountP1(), 10, 10);
+		g2.drawString("Score Player 1: " + controller.getScoreP1(), 10, 50);
+		g2.drawString("Score Player 2: " + controller.getScoreP2(), 10, 60);
+		
+		if(controller.getIrlightsP1() != null)
 		{
-			for(IRSource i : controller.getIrlights())
+			for(IRSource i : controller.getIrlightsP1())
 			{
+				g2.drawString("1", i.getX() - 10, i.getY() - 10);
 				g2.draw(new Ellipse2D.Double(i.getX(), i.getY(), 50, 50));
 				g2.drawLine(i.getX() + 25, i.getY(), i.getX() + 25, i.getY() + 20);
 				g2.drawLine(i.getX() + 25, i.getY() + 30, i.getX() + 25, i.getY() + 50);
@@ -58,6 +65,21 @@ public class WiiMoteView extends JPanel implements ActionListener, KeyListener  
 				g2.draw(new Ellipse2D.Double(i.getX() + 23, i.getY() + 23, 4, 4));
 			}
 		}
+		
+		if(controller.getIrlightsP2() != null)
+		{
+			for(IRSource i : controller.getIrlightsP2())
+			{
+				g2.drawString("2", i.getX() - 10, i.getY() - 10);
+				g2.draw(new Ellipse2D.Double(i.getX(), i.getY(), 50, 50));
+				g2.drawLine(i.getX() + 25, i.getY(), i.getX() + 25, i.getY() + 20);
+				g2.drawLine(i.getX() + 25, i.getY() + 30, i.getX() + 25, i.getY() + 50);
+				g2.drawLine(i.getX(), i.getY() + 25, i.getX() + 20, i.getY()+ 25);
+				g2.drawLine(i.getX() + 30, i.getY()  + 25,  i.getX() + 50, i.getY()+25);
+				g2.draw(new Ellipse2D.Double(i.getX() + 23, i.getY() + 23, 4, 4));
+			}
+		}
+		
 		g2.drawString("x : " + controller.getX(), 10, 20);
 		g2.drawString("y : " + controller.getY(), 10, 30);
 	}
