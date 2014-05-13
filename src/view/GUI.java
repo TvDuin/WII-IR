@@ -13,7 +13,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
-
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -28,10 +27,13 @@ public class GUI
 {	
 	private static String player1Name;
 	private static String player2Name;
+	public static JPanel[] panels = new JPanel[2];
 	
 	public static void main(String[] args)
 	{		
 		JFrame frame = new JFrame("Infra Shooter");
+		
+		frame.setExtendedState(frame.getExtendedState()|JFrame.MAXIMIZED_BOTH);
 		frame.setLayout(new BorderLayout());
 		
 		JPanel centerPanel = new JPanel();
@@ -40,21 +42,18 @@ public class GUI
 		player1Name = JOptionPane.showInputDialog("Enter name player1: ");
 		player2Name = JOptionPane.showInputDialog("Enter name player2: ");
 		
-		JPanel player1Panel = new EllipsePanel(player1Name, 0);
-		JPanel player2Panel = new EllipsePanel(player2Name, 1);
+		panels[0] = new EllipsePanel(player1Name, 0);
+		panels[1] = new EllipsePanel(player2Name, 1);
 		
 		centerPanel.setLayout(new GridLayout(2,1));
-		centerPanel.add(player1Panel);
-		centerPanel.add(player2Panel);
+		centerPanel.add(panels[0]);
+		centerPanel.add(panels[1]);
 		
 		frame.getContentPane().add(BorderLayout.CENTER, centerPanel);
-		frame.getContentPane().add(BorderLayout.EAST, rightPanel);
 		
 		frame.setDefaultCloseOperation(frame.EXIT_ON_CLOSE);	
-		frame.setExtendedState(frame.getExtendedState()|JFrame.MAXIMIZED_BOTH);
 		frame.pack();
 		frame.setVisible(true);
-		
 	}
 }
 	
@@ -62,15 +61,15 @@ class EllipsePanel extends JPanel implements ActionListener
 {
 	private Timer t = new Timer(200, this);
 	private WiiMoteController controller;
-	private Image bg = Toolkit.getDefaultToolkit().createImage("background.png");
 	private String name;
 	private int score = 0;
 	private int kills = 0;
 	private int deaths = 0;
 	private int shots = 25;
 	private int accuracy = 0;
-	private int playernr;
-		
+	public int playernr;
+	private Image background = Toolkit.getDefaultToolkit().createImage("background3.png");
+	
 	public EllipsePanel(String name, int playernr)
 	{
 		controller = new WiiMoteController();
@@ -85,38 +84,42 @@ class EllipsePanel extends JPanel implements ActionListener
 		super.paintComponent(g);
 		Graphics2D g2 = (Graphics2D)g;
 		
-		g.drawImage(bg, 0, 0, null);
+		g2.drawImage(background, 0, 0, null);
 		
-		Ellipse2D ellipse = new Ellipse2D.Double(100, 100, 50, 50);
-		g2.setColor(Color.blue);
-		
-		g2.draw(ellipse);
-		g2.fill(ellipse);
-		
-		g2.setColor(Color.black);
-		Font f = new Font(Font.SANS_SERIF, Font.BOLD, 20);
+		g2.setColor(Color.white);
+		Font f = new Font(Font.MONOSPACED, Font.BOLD, 20);
 		g2.setFont(f);
 		
-		g2.drawString("Name: ", 200, 135);
-		g2.drawString("Score: ", 250, 200);
-		g2.drawString("Kills: ", 250, 225);
-		g2.drawString("Deaths: ", 250, 250);
-		g2.drawString("Shots: ", 250, 275);
-		g2.drawString("Accuracy: ", 250, 300);
+		g2.drawString("Name: ", 600, 75);
+		g2.drawString("Score: ", 650, 125);
+		g2.drawString("Kills: ", 650, 150);
+		g2.drawString("Deaths: ", 650, 175);
+		g2.drawString("Shots: ", 650, 200);
+		g2.drawString("Accuracy: ", 650, 225);
 
-		g2.drawString(name, 275, 135);
-		g2.drawString(score + "", 360, 200);
-		g2.drawString(kills + "", 360, 225);
-		g2.drawString(deaths + "", 360, 250);
-		g2.drawString(shots + "", 360, 275);
-		g2.drawString(accuracy + "", 360, 300);
+		g2.drawString(name, 675, 75);
+		g2.drawString(score + "", 775, 125);
+		g2.drawString(kills + "", 775, 150);
+		g2.drawString(deaths + "", 775, 175);
+		g2.drawString(shots + "", 775, 200);
+		g2.drawString(accuracy + "", 775, 225);
+		
+		repaint();
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		score = (int)controller.getPlayers().get(playernr).getScore(); //Integer.toString(player.getScore());
-		kills = (int)controller.getPlayers().get(playernr).getHit(); //Integer.toString(player.getHit());
-		deaths = (int)controller.getPlayers().get(playernr).getDeaths(); //"0";
+		if(controller.getPlayers().get(0).getShots()>10){
+			if(this == GUI.panels[0]){
+				this.playernr = 1;
+			} 
+			if(this == GUI.panels[1]){
+				this.playernr = 0;
+			}
+		}
+		score = (int)controller.getPlayers().get(playernr).getScore(); 
+		kills = (int)controller.getPlayers().get(playernr).getHit(); 
+		deaths = (int)controller.getPlayers().get(playernr).getDeaths();
 		shots = (int)controller.getPlayers().get(playernr).getShots();
 		accuracy =(int)controller.getPlayers().get(playernr).getAccuracy();
 		repaint();
