@@ -93,6 +93,7 @@ public class WiiMoteController implements WiimoteListener {
 				{
 					getPlayers().get(0).setScore(getPlayers().get(0).getScore() + 1);
 					getPlayers().get(0).hit();
+					getPlayers().get(0).hit2(getPlayers().get(0).getIrsource()[0].getRy());
 					try{getPlayers().get(1).setDeaths(getPlayers().get(1).getDeaths() + 1);} catch(Exception e){}
 				}
 				break;
@@ -108,6 +109,7 @@ public class WiiMoteController implements WiimoteListener {
 					getPlayers().get(1).setScore(getPlayers().get(1).getScore() + 1);
 					getPlayers().get(1).hit();
 					getPlayers().get(0).setDeaths(getPlayers().get(0).getDeaths() + 1);
+					getPlayers().get(1).hit2(getPlayers().get(1).getIrsource()[0].getRy());
 				}
 				break;			
 			}

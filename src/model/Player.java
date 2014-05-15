@@ -38,6 +38,11 @@ public class Player {
 	{
 		setHit(getHit() + 1);
 	}
+	
+	public void hit2(int a)
+	{
+		this.score = getScore() + a;
+	}
 	public void setScore(int score) {
 		this.score = score;
 	}
