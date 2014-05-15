@@ -10,12 +10,13 @@ public class Player {
 	private double shots;
 	private double hits;
 	private double accuracy;
+	private int deaths;
 	private IRSource[] irsource;
 	
 	public Player()
 	{
 		this.score = 0;
-		this.bullets = 25;
+		this.bullets = 99999999;
 		this.setShots(0);
 	}
 	
@@ -78,6 +79,14 @@ public class Player {
 	}
 	public void setAccuracy(int accuracy) {
 		this.accuracy = accuracy;
+	}
+
+	public int getDeaths() {
+		return deaths;
+	}
+
+	public void setDeaths(int deaths) {
+		this.deaths = deaths;
 	}
 	
 }

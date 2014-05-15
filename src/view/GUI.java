@@ -29,8 +29,8 @@ public class GUI
 		
 		JPanel centerPanel = new JPanel();
 		JPanel rightPanel = new JPanel();
-		JPanel player1Panel = new EllipsePanel("Daan");
-		JPanel player2Panel = new EllipsePanel("Kasper");
+		JPanel player1Panel = new EllipsePanel("Daan", 0);
+		JPanel player2Panel = new EllipsePanel("Kasper", 1);
 		
 		centerPanel.setLayout(new GridLayout(2,1));
 		centerPanel.add(player1Panel);
@@ -58,10 +58,12 @@ class EllipsePanel extends JPanel implements ActionListener
 	private int deaths = 0;
 	private int shots = 25;
 	private int accuracy = 0;
+	private int playernr;
 		
-	public EllipsePanel(String name)
+	public EllipsePanel(String name, int playernr)
 	{
 		controller = new WiiMoteController();
+		this.playernr = playernr;
 		this.name = name;
 		t.start();
 	}
@@ -101,11 +103,11 @@ class EllipsePanel extends JPanel implements ActionListener
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		score = (int)controller.getPlayers().get(0).getScore(); //Integer.toString(player.getScore());
-		kills = (int)controller.getPlayers().get(0).getHit(); //Integer.toString(player.getHit());
-		deaths = (int)controller.getPlayers().get(0).getHit(); //"0";
-		shots = (int)controller.getPlayers().get(0).getShots();
-		accuracy =(int)controller.getPlayers().get(0).getAccuracy();
+		score = (int)controller.getPlayers().get(playernr).getScore(); //Integer.toString(player.getScore());
+		kills = (int)controller.getPlayers().get(playernr).getHit(); //Integer.toString(player.getHit());
+		deaths = (int)controller.getPlayers().get(playernr).getDeaths(); //"0";
+		shots = (int)controller.getPlayers().get(playernr).getShots();
+		accuracy =(int)controller.getPlayers().get(playernr).getAccuracy();
 		repaint();
 	}
 }
