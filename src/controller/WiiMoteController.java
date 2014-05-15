@@ -196,6 +196,8 @@ public class WiiMoteController implements WiimoteListener {
 		getPlayers().get(1).setIrsource(arg0.getIRPoints());
 		break;
 
+	
+		
 		default: break;
 		}
 	}

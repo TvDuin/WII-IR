@@ -17,6 +17,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
+import controller.WiiMoteController;
 import model.Player;
 
 public class GUI 
@@ -49,25 +50,26 @@ public class GUI
 class EllipsePanel extends JPanel implements ActionListener
 {
 	private Timer t = new Timer(200, this);
-	private Player player;
+	private WiiMoteController controller;
 	
 	private String name;
-	private String score = "0";
-	private String kills = "0";
-	private String deaths = "0";
-	private String shots = "25";
-	private String accuracy = "0";
+	private int score = 0;
+	private int kills = 0;
+	private int deaths = 0;
+	private int shots = 25;
+	private int accuracy = 0;
 		
 	public EllipsePanel(String name)
 	{
-		player = new Player();
+		controller = new WiiMoteController();
 		this.name = name;
+		t.start();
 	}
 	
 	
 	public void paintComponent(Graphics g)
 	{
-		super.paintComponents(g);
+		super.paintComponent(g);
 		Graphics2D g2 = (Graphics2D)g;
 		
 		Ellipse2D ellipse = new Ellipse2D.Double(100, 100, 50, 50);
@@ -90,20 +92,20 @@ class EllipsePanel extends JPanel implements ActionListener
 		g2.drawString("Accuracy: ", 250, 300);
 
 		g2.drawString(name, 275, 135);
-		g2.drawString(score, 360, 200);
-		g2.drawString(kills, 360, 225);
-		g2.drawString(deaths, 360, 250);
-		g2.drawString(shots, 360, 275);
-		g2.drawString(accuracy, 360, 300);
+		g2.drawString(score + "", 360, 200);
+		g2.drawString(kills + "", 360, 225);
+		g2.drawString(deaths + "", 360, 250);
+		g2.drawString(shots + "", 360, 275);
+		g2.drawString(accuracy + "", 360, 300);
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		score = Integer.toString(player.getScore());
-		kills = Integer.toString(player.getHit());
-		deaths = "0";
-		shots = Integer.toString(player.getShots());
-		accuracy = Double.toString(player.getAccuracy());
+		score = (int)controller.getPlayers().get(0).getScore(); //Integer.toString(player.getScore());
+		kills = (int)controller.getPlayers().get(0).getHit(); //Integer.toString(player.getHit());
+		deaths = (int)controller.getPlayers().get(0).getHit(); //"0";
+		shots = (int)controller.getPlayers().get(0).getShots();
+		accuracy =(int)controller.getPlayers().get(0).getAccuracy();
 		repaint();
 	}
 }
