@@ -7,6 +7,7 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -14,6 +15,9 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 
 import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
@@ -22,6 +26,9 @@ import model.Player;
 
 public class GUI 
 {	
+	private static String player1Name;
+	private static String player2Name;
+	
 	public static void main(String[] args)
 	{		
 		JFrame frame = new JFrame("Infra Shooter");
@@ -29,8 +36,12 @@ public class GUI
 		
 		JPanel centerPanel = new JPanel();
 		JPanel rightPanel = new JPanel();
-		JPanel player1Panel = new EllipsePanel("Daan", 0);
-		JPanel player2Panel = new EllipsePanel("Kasper", 1);
+		
+		player1Name = JOptionPane.showInputDialog("Enter name player1: ");
+		player2Name = JOptionPane.showInputDialog("Enter name player2: ");
+		
+		JPanel player1Panel = new EllipsePanel(player1Name, 0);
+		JPanel player2Panel = new EllipsePanel(player2Name, 1);
 		
 		centerPanel.setLayout(new GridLayout(2,1));
 		centerPanel.add(player1Panel);
@@ -51,7 +62,7 @@ class EllipsePanel extends JPanel implements ActionListener
 {
 	private Timer t = new Timer(200, this);
 	private WiiMoteController controller;
-	
+	private Image bg = Toolkit.getDefaultToolkit().createImage("background.png");
 	private String name;
 	private int score = 0;
 	private int kills = 0;
@@ -74,13 +85,13 @@ class EllipsePanel extends JPanel implements ActionListener
 		super.paintComponent(g);
 		Graphics2D g2 = (Graphics2D)g;
 		
+		g.drawImage(bg, 0, 0, null);
+		
 		Ellipse2D ellipse = new Ellipse2D.Double(100, 100, 50, 50);
-		Rectangle2D rectangle = new Rectangle2D.Double(5, 5, 1352, 340);
 		g2.setColor(Color.blue);
 		
 		g2.draw(ellipse);
 		g2.fill(ellipse);
-		g2.draw(rectangle);
 		
 		g2.setColor(Color.black);
 		Font f = new Font(Font.SANS_SERIF, Font.BOLD, 20);
