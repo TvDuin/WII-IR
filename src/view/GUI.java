@@ -93,7 +93,7 @@ class EllipsePanel extends JPanel implements ActionListener
 		g2.draw(ellipse);
 		g2.fill(ellipse);
 		
-		g2.setColor(Color.black);
+		g2.setColor(Color.white);
 		Font f = new Font(Font.SANS_SERIF, Font.BOLD, 20);
 		g2.setFont(f);
 		

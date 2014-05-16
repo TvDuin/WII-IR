@@ -11,6 +11,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
@@ -30,7 +31,7 @@ public class WiiMoteView extends JPanel implements ActionListener, KeyListener  
 	private WiiMoteController controller;
 
 	public WiiMoteView(WiiMoteController controller) {
-		setPreferredSize( new Dimension(960, 540) );
+		setPreferredSize( new Dimension(1024, 768) );
 		this.controller = controller;
 		this.addKeyListener(this);
 		this.setBackground(Color.white);
@@ -47,8 +48,8 @@ public class WiiMoteView extends JPanel implements ActionListener, KeyListener  
 		super.paintComponent(g);
 		Graphics2D g2 = (Graphics2D) g;
 		//		g2.setPaint(new GradientPaint(new Point2D.Double(0, 0), Color.magenta, new Point2D.Double(960, 540), Color.orange));
-		g2.drawLine(960, 100, 960, 980);
-		g2.drawLine(100, 540, 1820, 540);
+		g2.drawLine(512, 100, 512, 668);
+		g2.drawLine(100, 384, 924, 384);
 		g2.drawString("leds : " + controller.getAmountP1(), 10, 10);
 		g2.drawString("Score Player 1: " + controller.getScore(1), 10, 50);
 		g2.drawString("Score Player 2: " + controller.getScore(2), 10, 60);
@@ -58,7 +59,8 @@ public class WiiMoteView extends JPanel implements ActionListener, KeyListener  
 		g2.drawString("Shots Player 2: " + controller.getShots(2), 10, 110);
 		g2.drawString("Hits Player 1: " + controller.getHits(1), 10, 80);
 		g2.drawString("Hits Player 2: " + controller.getHits(2), 10, 90);
-
+		
+		Point2D center = new Point2D.Double(512,384);
 		if(controller.getIrlightsP1() != null)
 		{
 			for(IRSource i : controller.getIrlightsP1())
@@ -70,6 +72,11 @@ public class WiiMoteView extends JPanel implements ActionListener, KeyListener  
 				g2.drawLine(i.getX(), i.getY() + 25, i.getX() + 20, i.getY()+ 25);
 				g2.drawLine(i.getX() + 30, i.getY()  + 25,  i.getX() + 50, i.getY()+25);
 				g2.draw(new Ellipse2D.Double(i.getX() + 23, i.getY() + 23, 4, 4));
+				
+				Point2D p2 = new Point2D.Double(i.getX(), i.getY());
+				Line2D line = new Line2D.Double(p2, center);
+				g2.draw(line);
+				
 			}
 		}
 

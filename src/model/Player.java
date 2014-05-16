@@ -1,5 +1,7 @@
 package model;
 
+import java.awt.geom.Point2D;
+
 import wiiusej.values.IRSource;
 
 public class Player {
@@ -34,14 +36,26 @@ public class Player {
 		setShots(getShots() + 1);
 	}
 	
-	public void hit()
+	public void hit3()
 	{
 		setHit(getHit() + 1);
 	}
 	
-	public void hit2(int a)
+	public void hit()
 	{
-		this.score = getScore() + a;
+		for(IRSource i : irsource)
+		{
+		Point2D.Double point = new Point2D.Double(i.getX(), i.getY());
+		System.out.println("//////////////////////////////////////////////////////////////////////////////" + point.distance(new Point2D.Double(512,384)));
+		int dist = (int) point.distance(new Point2D.Double(512,384));
+		if(dist <= 50)
+			this.score += 100;
+		else if(dist <= 150)
+			this.score += 50;
+		else if(dist <= 500)
+			this.score += 10;
+		}
+	//	this.score = getScore() + a;
 	}
 	public void setScore(int score) {
 		this.score = score;
@@ -79,7 +93,7 @@ public class Player {
 	public double getAccuracy() 
 	{
 		accuracy = (hits / shots);
-		System.out.println("Accuracy: -----------------------------------" + accuracy);
+		//System.out.println("Accuracy: -----------------------------------" + accuracy);
 		return accuracy;
 	}
 	public void setAccuracy(int accuracy) {
