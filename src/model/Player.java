@@ -14,6 +14,7 @@ public class Player {
 	private double accuracy;
 	private int deaths;
 	private IRSource[] irsource;
+	private Point2D point;
 	
 	public Player()
 	{
@@ -37,31 +38,13 @@ public class Player {
 	}
 	
 	
-	public void hit()
-	{
-		for(IRSource i : irsource)
-		{
-		Point2D.Double point = new Point2D.Double(i.getX(), i.getY());
-		System.out.println("//////////////////////////////////////////////////////////////////////////////" + point.distance(new Point2D.Double(512,384)));
-		int dist = (int) point.distance(new Point2D.Double(512,384));
-		if(dist <= 50)
-			this.score += 100;
-		else if(dist <= 150)
-			this.score += 50;
-		else if(dist <= 500)
-			this.score += 10;
-		}
-	//	this.score = getScore() + a;
-	}
-	
 	public void hit(int dist)
 	{
-		
-		if(dist <= 50)
+		if(dist <= 70)
 			this.score += 100;
-		else if(dist <= 150)
+		else if(dist <= 250)
 			this.score += 50;
-		else if(dist <= 500)
+		else if(dist <= 700)
 			this.score += 10;
 		
 	//	this.score = getScore() + a;
