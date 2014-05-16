@@ -60,6 +60,8 @@ public class WiiMoteView extends JPanel implements ActionListener, KeyListener  
 		g2.drawString("Hits Player 1: " + controller.getHits(1), 10, 80);
 		g2.drawString("Hits Player 2: " + controller.getHits(2), 10, 90);
 		
+		g2.drawString("Frequency " + controller.getFrequency(), 10, 160);
+		
 		Point2D center = new Point2D.Double(512,384);
 		if(controller.getIrlightsP1() != null)
 		{

@@ -44,6 +44,9 @@ public class WiiMoteController implements WiimoteListener {
 	private boolean buttonPressed;
 
 	private ArrayList<Long> times = new ArrayList<Long>();
+	private int sum = 0;
+	private int index = 0;
+	
 
 
 	public WiiMoteController() {
@@ -226,10 +229,14 @@ public class WiiMoteController implements WiimoteListener {
 	@Override
 	public void onIrEvent(IREvent arg0) {
 
-		int player = arg0.getWiimoteId();	
+		int player = arg0.getWiimoteId();
+		
 		long timeInMillis = 0;
 		long newTimeInMillis = 0;
 		boolean newIRFound = false;
+		
+		index = 0;
+		sum = 0;
 
 		switch(player)
 		{
@@ -266,6 +273,18 @@ public class WiiMoteController implements WiimoteListener {
 			times.add(newTimeInMillis - timeInMillis);
 		}
 		//End of frequency check
+		
+	}
+	
+	public int getFrequency()
+	{
+		for(int i = 0; i < times.size(); i ++)
+		{
+			sum += times.get(i);
+			index ++;
+		}
+		
+		return sum/index;
 	}
 
 	public IRSource[] getIrlightsP1() {
