@@ -40,6 +40,9 @@ public class WiiMoteController implements WiimoteListener {
 	private int y;
 	private ArrayList<Player> players = new ArrayList<Player>();
 	private boolean buttonPressed;
+	
+	private ArrayList<Long> times = new ArrayList<Long>();
+	
 
 	public WiiMoteController() {
 		this.model = new WiiMoteModel();
@@ -196,7 +199,11 @@ public class WiiMoteController implements WiimoteListener {
 	@Override
 	public void onIrEvent(IREvent arg0) {
 
-		int player = arg0.getWiimoteId();			
+		int player = arg0.getWiimoteId();	
+		long timeInMillis = 0;
+		long newTimeInMillis = 0;
+		boolean newIRFound = false;
+		
 		switch(player)
 		{
 		case 1: getPlayers().get(0).setAmountIR(arg0.getIRPoints().length);
@@ -207,11 +214,31 @@ public class WiiMoteController implements WiimoteListener {
 		getPlayers().get(1).setAmountIR(arg0.getIRPoints().length);	
 		getPlayers().get(1).setIrsource(arg0.getIRPoints());	
 		break;
-
-	
 		
 		default: break;
 		}
+		
+		
+		//frequency check
+		for(int i = 0; i < 20; i ++)
+		{
+			if(arg0.getIRPoints().length != 0)
+			{
+				timeInMillis = System.currentTimeMillis();
+				
+				while(newIRFound == false)
+				{
+					if(arg0.getIRPoints().length != 0)
+					{
+						newTimeInMillis = System.currentTimeMillis();
+						newIRFound = true;
+					}
+				}
+			}
+			
+			times.add(newTimeInMillis - timeInMillis);
+		}
+		//End of frequency check
 	}
 
 	public IRSource[] getIrlightsP1() {
