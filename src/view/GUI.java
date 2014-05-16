@@ -13,7 +13,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
-
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -28,6 +27,7 @@ public class GUI
 {	
 	private static String player1Name;
 	private static String player2Name;
+	public static JPanel[] panels = new JPanel[2];
 	
 	public static void main(String[] args)
 	{		
@@ -42,19 +42,18 @@ public class GUI
 		player1Name = JOptionPane.showInputDialog("Enter name player1: ");
 		player2Name = JOptionPane.showInputDialog("Enter name player2: ");
 		
-		JPanel firstPanel = new EllipsePanel(player1Name, 0);
-		JPanel secondPanel = new EllipsePanel(player2Name, 1);
+		panels[0] = new EllipsePanel(player1Name, 0);
+		panels[1] = new EllipsePanel(player2Name, 1);
 		
 		centerPanel.setLayout(new GridLayout(2,1));
-		centerPanel.add(firstPanel);
-		centerPanel.add(secondPanel);
+		centerPanel.add(panels[0]);
+		centerPanel.add(panels[1]);
 		
 		frame.getContentPane().add(BorderLayout.CENTER, centerPanel);
 		
 		frame.setDefaultCloseOperation(frame.EXIT_ON_CLOSE);	
 		frame.pack();
 		frame.setVisible(true);
-		
 	}
 }
 	
@@ -68,7 +67,7 @@ class EllipsePanel extends JPanel implements ActionListener
 	private int deaths = 0;
 	private int shots = 25;
 	private int accuracy = 0;
-	private int playernr;
+	public int playernr;
 	private Image background = Toolkit.getDefaultToolkit().createImage("background3.png");
 	
 	public EllipsePanel(String name, int playernr)
@@ -110,9 +109,17 @@ class EllipsePanel extends JPanel implements ActionListener
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		score = (int)controller.getPlayers().get(playernr).getScore(); //Integer.toString(player.getScore());
-		kills = (int)controller.getPlayers().get(playernr).getHit(); //Integer.toString(player.getHit());
-		deaths = (int)controller.getPlayers().get(playernr).getDeaths(); //"0";
+		if(controller.getPlayers().get(0).getShots()>10){
+			if(this == GUI.panels[0]){
+				this.playernr = 1;
+			} 
+			if(this == GUI.panels[1]){
+				this.playernr = 0;
+			}
+		}
+		score = (int)controller.getPlayers().get(playernr).getScore(); 
+		kills = (int)controller.getPlayers().get(playernr).getHit(); 
+		deaths = (int)controller.getPlayers().get(playernr).getDeaths();
 		shots = (int)controller.getPlayers().get(playernr).getShots();
 		accuracy =(int)controller.getPlayers().get(playernr).getAccuracy();
 		repaint();
