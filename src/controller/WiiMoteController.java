@@ -17,6 +17,8 @@ import wiiusej.values.Orientation;
 import wiiusej.wiiusejevents.physicalevents.ExpansionEvent;
 import wiiusej.wiiusejevents.physicalevents.IREvent;
 import wiiusej.wiiusejevents.physicalevents.MotionSensingEvent;
+import wiiusej.wiiusejevents.physicalevents.NunchukButtonsEvent;
+import wiiusej.wiiusejevents.physicalevents.NunchukEvent;
 import wiiusej.wiiusejevents.physicalevents.WiimoteButtonsEvent;
 import wiiusej.wiiusejevents.utils.WiimoteListener;
 import wiiusej.wiiusejevents.wiiuseapievents.ClassicControllerInsertedEvent;
@@ -81,8 +83,24 @@ public class WiiMoteController implements WiimoteListener {
 	@Override
 	public void onButtonsEvent(WiimoteButtonsEvent arg0) 
 	{
+
 		int player = arg0.getWiimoteId();
-		if(arg0.isButtonBJustPressed() && !buttonPressed)
+		if(arg0.isButtonAJustPressed())
+		{
+			switch(player)
+			{
+			case 1: model.playReload();
+			getPlayers().get(0).reload();
+			break;
+
+			case 2: model.playReload();
+			getPlayers().get(1).reload();
+			break;
+
+			default: break;
+			}
+		}
+		else if(arg0.isButtonBJustPressed() && !buttonPressed)
 		{
 			buttonPressed = true;
 			switch(player)
@@ -92,14 +110,15 @@ public class WiiMoteController implements WiimoteListener {
 				{
 					model.playShot();
 					getPlayers().get(0).shot();
-				}				
-				if(getPlayers().get(0).getAmountIR() > 0)
-				{
-					Point2D.Double point = new Point2D.Double(getPlayers().get(0).getIrsource()[0].getX(), getPlayers().get(0).getIrsource()[0].getY());
-					int dist = (int) point.distance(new Point2D.Double(512, 384));
-					getPlayers().get(0).hit(dist);
+
+					if(getPlayers().get(0).getAmountIR() > 0)
+					{
+						Point2D.Double point = new Point2D.Double(getPlayers().get(0).getIrsource()[0].getX(), getPlayers().get(0).getIrsource()[0].getY());
+						int dist = (int) point.distance(new Point2D.Double(512, 384));
+						getPlayers().get(0).hit(dist);
+					}
+					try{getPlayers().get(1).setDeaths(getPlayers().get(1).getDeaths() + 1);} catch(Exception e){}
 				}
-				try{getPlayers().get(1).setDeaths(getPlayers().get(1).getDeaths() + 1);} catch(Exception e){}
 
 				break;
 
@@ -108,12 +127,13 @@ public class WiiMoteController implements WiimoteListener {
 				{
 					model.playShot();
 					getPlayers().get(1).shot();
-				}
-				if(getPlayers().get(1).getAmountIR() > 0)
-				{
-					Point2D.Double point = new Point2D.Double(getPlayers().get(1).getIrsource()[0].getX(), getPlayers().get(1).getIrsource()[0].getY());
-					int dist = (int) point.distance(new Point2D.Double(512, 384));
-					getPlayers().get(1).hit(dist);
+
+					if(getPlayers().get(1).getAmountIR() > 0)
+					{
+						Point2D.Double point = new Point2D.Double(getPlayers().get(1).getIrsource()[0].getX(), getPlayers().get(1).getIrsource()[0].getY());
+						int dist = (int) point.distance(new Point2D.Double(512, 384));
+						getPlayers().get(1).hit(dist);
+					}
 				}
 				break;			
 			}
@@ -122,8 +142,10 @@ public class WiiMoteController implements WiimoteListener {
 		{
 			buttonPressed = false;
 		}
-
 	}
+
+
+
 
 	public int getScore(int player)
 	{
@@ -176,6 +198,17 @@ public class WiiMoteController implements WiimoteListener {
 
 	@Override
 	public void onExpansionEvent(ExpansionEvent arg0) {
+		//		if(arg0 instanceof NunchukEvent)
+		//		{
+		//			
+		//			NunchukEvent nun = (NunchukEvent) arg0;
+		//			NunchukButtonsEvent buttons = nun.getButtonsEvent();
+		//			if(buttons.isButtonCPressed())
+		//			{
+		//				
+		//				model.playReload();
+		//			}
+		//		}
 	}
 
 	@Override

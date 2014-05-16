@@ -8,6 +8,7 @@ public class Player {
 	
 	private int score;
 	private int bullets;
+	private int maxBullets = 25;
 	private int amountIR;
 	private double shots;
 	private double hits;
@@ -19,7 +20,7 @@ public class Player {
 	public Player()
 	{
 		this.score = 0;
-		this.bullets = 99999999;
+		this.bullets = maxBullets;
 		this.setShots(0);
 	}
 	
@@ -35,6 +36,11 @@ public class Player {
 	{
 		bullets--;
 		setShots(getShots() + 1);
+	}
+	
+	public void reload()
+	{
+		bullets = maxBullets;
 	}
 	
 	

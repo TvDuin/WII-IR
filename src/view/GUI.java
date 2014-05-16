@@ -110,14 +110,11 @@ class EllipsePanel extends JPanel implements ActionListener
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if(controller.getPlayers().get(0).getShots()>10){
-			if(this == GUI.panels[0]){
-				this.playernr = 1;
-			} 
+		
 			if(this == GUI.panels[1]){
 				this.playernr = 0;
 			}
-		}
+		
 		score = (int)controller.getPlayers().get(playernr).getScore(); 
 		kills = (int)controller.getPlayers().get(playernr).getHit(); 
 		deaths = (int)controller.getPlayers().get(playernr).getDeaths();
