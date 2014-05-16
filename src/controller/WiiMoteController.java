@@ -93,12 +93,18 @@ public class WiiMoteController implements WiimoteListener {
 				if(getPlayers().get(0).getAmountIR() > 1)
 				{
 					
+							Point2D.Double point = new Point2D.Double(getPlayers().get(0).getIrsource()[0].getX(), getPlayers().get(0).getIrsource()[0].getY());
+							int dist = (int) point.distance(new Point2D.Double(512, 384));
+							System.out.println("//////////////////////////////////////////////////////////////////////////////" + point.distance(new Point2D.Double(512,384)));
+							getPlayers().get(0).hit(dist);
+				}
+					
 					//System.out.println("----------------------------------------------------------------" + dist);
 					//getPlayers().get(0).setScore(getPlayers().get(0).getScore() + 1);
-					getPlayers().get(0).hit();
+					//getPlayers().get(0).hit();
 				//	getPlayers().get(0).hit2(getPlayers().get(0).getIrsource()[0].getRy());
 					try{getPlayers().get(1).setDeaths(getPlayers().get(1).getDeaths() + 1);} catch(Exception e){}
-				}
+				
 				break;
 
 			case 2: 
@@ -109,7 +115,7 @@ public class WiiMoteController implements WiimoteListener {
 				}
 				if(getPlayers().get(1).getAmountIR() > 1)
 				{
-					getPlayers().get(1).hit();
+					//getPlayers().get(1).hit();
 					getPlayers().get(0).setDeaths(getPlayers().get(0).getDeaths() + 1);
 				}
 				break;			

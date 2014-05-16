@@ -36,10 +36,6 @@ public class Player {
 		setShots(getShots() + 1);
 	}
 	
-	public void hit3()
-	{
-		setHit(getHit() + 1);
-	}
 	
 	public void hit()
 	{
@@ -55,6 +51,19 @@ public class Player {
 		else if(dist <= 500)
 			this.score += 10;
 		}
+	//	this.score = getScore() + a;
+	}
+	
+	public void hit(int dist)
+	{
+		
+		if(dist <= 50)
+			this.score += 100;
+		else if(dist <= 150)
+			this.score += 50;
+		else if(dist <= 500)
+			this.score += 10;
+		
 	//	this.score = getScore() + a;
 	}
 	public void setScore(int score) {
