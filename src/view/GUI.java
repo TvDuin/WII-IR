@@ -13,6 +13,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
+
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -61,13 +64,16 @@ class EllipsePanel extends JPanel implements ActionListener
 	private Timer t = new Timer(200, this);
 	private WiiMoteController controller;
 	private String name;
-//	private int score = 0;
-//	private int kills;
-//	private int deaths;
-//	private int shots;
-//	private int accuracy;
+	private int score = 0;
+	private int kills = 0;
+	private int deaths = 0;
+	private int shots = 25;
+	private int accuracy = 0;
+	private int xPos = 850;
 	public int playernr;
+	public int bulletCount;
 	private Image background = Toolkit.getDefaultToolkit().createImage("background3.png");
+	private Image bullet = Toolkit.getDefaultToolkit().createImage("bullet.png");
 	
 	public EllipsePanel(String name, int playernr)
 	{
@@ -87,9 +93,8 @@ class EllipsePanel extends JPanel implements ActionListener
 		
 		g2.setColor(Color.white);
 		Font f = new Font(Font.MONOSPACED, Font.BOLD, 20);
-		g2.setColor(Color.white);
 		g2.setFont(f);
-		try{
+		
 		g2.drawString("Name: ", 600, 75);
 		g2.drawString("Score: ", 650, 125);
 		g2.drawString("Kills: ", 650, 150);
@@ -103,22 +108,19 @@ class EllipsePanel extends JPanel implements ActionListener
 		g2.drawString((int)controller.getPlayers().get(playernr).getDeaths() + "", 775, 175);
 		g2.drawString((int)controller.getPlayers().get(playernr).getShots() + "", 775, 200);
 		g2.drawString((int)controller.getPlayers().get(playernr).getAccuracy() + "", 775, 225);
-		}
-		catch(Exception e){}
+		
 		repaint();
 	}
 
 	@Override
-	public void actionPerformed(ActionEvent e) {
-				
-//		try{
-//		score = (int)controller.getPlayers().get(playernr).getScore(); 
-//		kills = (int)controller.getPlayers().get(playernr).getHit(); 
-//		deaths = (int)controller.getPlayers().get(playernr).getDeaths();
-//		shots = (int)controller.getPlayers().get(playernr).getShots();
-//		accuracy =(int)controller.getPlayers().get(playernr).getAccuracy();
-//		}
-//		catch(Exception e1){}
+	public void actionPerformed(ActionEvent e){
+		//score = (int)controller.getPlayers().get(playernr).getScore(); 
+		//kills = (int)controller.getPlayers().get(playernr).getHit(); 
+		//deaths = (int)controller.getPlayers().get(playernr).getDeaths();
+		//shots = (int)controller.getPlayers().get(playernr).getShots();
+		//accuracy = (int)controller.getPlayers().get(playernr).getAccuracy();
+		//bulletCount = (int)controller.getPlayers().get(playernr).getBullets();
+		
 		repaint();
 	}
 }
