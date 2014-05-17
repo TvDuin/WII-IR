@@ -268,6 +268,8 @@ public class WiiMoteController implements WiimoteListener {
 						newIRFound = true;
 					}
 				}
+				
+				newIRFound = false;
 			}
 
 			times.add(newTimeInMillis - timeInMillis);
