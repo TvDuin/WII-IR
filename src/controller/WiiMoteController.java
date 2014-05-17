@@ -243,9 +243,6 @@ public class WiiMoteController implements WiimoteListener {
 		long timeInMillis = 0;
 		long newTimeInMillis = 0;
 		boolean newIRFound = false;
-		
-		index = 0;
-		sum = 0;
 
 		switch(player)
 		{
