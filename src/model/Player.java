@@ -8,7 +8,7 @@ public class Player {
 	
 	private int score;
 	private int bullets;
-	private int maxBullets = 25;
+	private int maxBullets = 15;
 	private int amountIR;
 	private double shots;
 	private double hits;

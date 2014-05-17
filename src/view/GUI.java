@@ -35,17 +35,19 @@ public class GUI
 	public static void main(String[] args)
 	{		
 		JFrame frame = new JFrame("Infra Shooter");
-		
-		frame.setExtendedState(frame.getExtendedState()|JFrame.MAXIMIZED_BOTH);
+		//1425 x 360
+		//frame.setExtendedState(frame.getExtendedState()|JFrame.MAXIMIZED_BOTH);
 		frame.setLayout(new BorderLayout());
-		
+		frame.setResizable(false);
 		JPanel centerPanel = new JPanel();
 		
 		player1Name = JOptionPane.showInputDialog("Enter name player1: ");
 		player2Name = JOptionPane.showInputDialog("Enter name player2: ");
 		
 		panels[0] = new EllipsePanel(player1Name, 0);
+		panels[0].setPreferredSize(new Dimension(1425, 360));
 		panels[1] = new EllipsePanel(player2Name, 1);
+		panels[1].setPreferredSize(new Dimension(1425, 360));
 		
 		centerPanel.setLayout(new GridLayout(2,1));
 		centerPanel.add(panels[0]);
@@ -55,6 +57,7 @@ public class GUI
 		
 		frame.setDefaultCloseOperation(frame.EXIT_ON_CLOSE);	
 		frame.pack();
+	
 		frame.setVisible(true);
 	}
 }
@@ -64,14 +67,9 @@ class EllipsePanel extends JPanel implements ActionListener
 	private Timer t = new Timer(200, this);
 	private WiiMoteController controller;
 	private String name;
-	private int score = 0;
-	private int kills = 0;
-	private int deaths = 0;
-	private int shots = 25;
-	private int accuracy = 0;
-	private int xPos = 850;
 	public int playernr;
 	public int bulletCount;
+	private int xPos = 850;
 	private Image background = Toolkit.getDefaultToolkit().createImage("background3.png");
 	private Image bullet = Toolkit.getDefaultToolkit().createImage("bullet.png");
 	
@@ -93,6 +91,7 @@ class EllipsePanel extends JPanel implements ActionListener
 		
 		g2.setColor(Color.white);
 		Font f = new Font(Font.MONOSPACED, Font.BOLD, 20);
+		g2.drawLine(0, 360, 1425, 360);
 		g2.setFont(f);
 		
 		g2.drawString("Name: ", 600, 75);
@@ -103,24 +102,27 @@ class EllipsePanel extends JPanel implements ActionListener
 		g2.drawString("Accuracy: ", 650, 225);
 
 		g2.drawString(name, 675, 75);
+		try{
 		g2.drawString((int)controller.getPlayers().get(playernr).getScore() + "", 775, 125);
 		g2.drawString((int)controller.getPlayers().get(playernr).getHit() + "", 775, 150);
 		g2.drawString((int)controller.getPlayers().get(playernr).getDeaths() + "", 775, 175);
 		g2.drawString((int)controller.getPlayers().get(playernr).getShots() + "", 775, 200);
 		g2.drawString((int)controller.getPlayers().get(playernr).getAccuracy() + "", 775, 225);
 		
-		repaint();
+		
+		for(int i = 0; i < controller.getPlayers().get(playernr).getBullets(); i++)
+		{
+			g2.drawImage(bullet, xPos, 50, null);
+			xPos += 15;
+		}
+		
+		xPos = 850;
+		}
+		catch(Exception e){}
 	}
 
 	@Override
-	public void actionPerformed(ActionEvent e){
-		//score = (int)controller.getPlayers().get(playernr).getScore(); 
-		//kills = (int)controller.getPlayers().get(playernr).getHit(); 
-		//deaths = (int)controller.getPlayers().get(playernr).getDeaths();
-		//shots = (int)controller.getPlayers().get(playernr).getShots();
-		//accuracy = (int)controller.getPlayers().get(playernr).getAccuracy();
-		//bulletCount = (int)controller.getPlayers().get(playernr).getBullets();
-		
+	public void actionPerformed(ActionEvent e){		
 		repaint();
 	}
 }
