@@ -45,7 +45,7 @@ public class WiiMoteController implements WiimoteListener {
 
 	private ArrayList<Long> times = new ArrayList<Long>();
 	private int sum = 0;
-	private int index = 0;
+	private int index = 1;
 	
 
 
