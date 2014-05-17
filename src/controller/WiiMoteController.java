@@ -280,13 +280,20 @@ public class WiiMoteController implements WiimoteListener {
 	
 	public int getFrequency()
 	{
+		int freq = 0;
+		
 		for(int i = 0; i < times.size(); i ++)
 		{
 			sum += times.get(i);
 			index ++;
 		}
 		
-		return sum/index;
+		freq = sum/index;
+		sum = 0;
+		index = 1;
+		
+		return freq;
+		
 	}
 
 	public IRSource[] getIrlightsP1() {
