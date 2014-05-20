@@ -53,6 +53,8 @@ public class Player {
 		else if(dist <= 700)
 			this.score += 10;
 		
+		hits++;
+		
 	//	this.score = getScore() + a;
 	}
 	public void setScore(int score) {
@@ -82,15 +84,16 @@ public class Player {
 	public void setShots(int shots) {
 		this.shots = shots;
 	}
-	public int getHit() {
+	public int getKill() {
 		return (int)hits;
 	}
 	public void setHit(int hit) {
 		this.hits = hit;
+		
 	}
 	public double getAccuracy() 
 	{
-		accuracy = (hits / shots);
+		accuracy = (hits / shots) * 100;
 		//System.out.println("Accuracy: -----------------------------------" + accuracy);
 		return accuracy;
 	}

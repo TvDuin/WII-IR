@@ -95,6 +95,7 @@ class EllipsePanel extends JPanel implements ActionListener
 		g2.setFont(f);
 		
 		g2.drawString("Name: ", 600, 75);
+		
 		g2.drawString("Score: ", 650, 125);
 		g2.drawString("Kills: ", 650, 150);
 		g2.drawString("Deaths: ", 650, 175);
@@ -104,10 +105,10 @@ class EllipsePanel extends JPanel implements ActionListener
 		g2.drawString(name, 675, 75);
 		try{
 		g2.drawString((int)controller.getPlayers().get(playernr).getScore() + "", 775, 125);
-		g2.drawString((int)controller.getPlayers().get(playernr).getHit() + "", 775, 150);
+		g2.drawString((int)controller.getPlayers().get(playernr).getKill() + "", 775, 150);
 		g2.drawString((int)controller.getPlayers().get(playernr).getDeaths() + "", 775, 175);
 		g2.drawString((int)controller.getPlayers().get(playernr).getShots() + "", 775, 200);
-		g2.drawString((int)controller.getPlayers().get(playernr).getAccuracy() + "", 775, 225);
+		g2.drawString((int)controller.getPlayers().get(playernr).getAccuracy() + "%", 775, 225);
 		
 		
 		for(int i = 0; i < controller.getPlayers().get(playernr).getBullets(); i++)

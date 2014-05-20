@@ -1,5 +1,6 @@
 package controller;
 
+import java.awt.geom.Point2D;
 import java.io.File;
 import java.util.ArrayList;
 
@@ -16,6 +17,8 @@ import wiiusej.values.Orientation;
 import wiiusej.wiiusejevents.physicalevents.ExpansionEvent;
 import wiiusej.wiiusejevents.physicalevents.IREvent;
 import wiiusej.wiiusejevents.physicalevents.MotionSensingEvent;
+import wiiusej.wiiusejevents.physicalevents.NunchukButtonsEvent;
+import wiiusej.wiiusejevents.physicalevents.NunchukEvent;
 import wiiusej.wiiusejevents.physicalevents.WiimoteButtonsEvent;
 import wiiusej.wiiusejevents.utils.WiimoteListener;
 import wiiusej.wiiusejevents.wiiuseapievents.ClassicControllerInsertedEvent;
@@ -26,6 +29,14 @@ import wiiusej.wiiusejevents.wiiuseapievents.GuitarHeroRemovedEvent;
 import wiiusej.wiiusejevents.wiiuseapievents.NunchukInsertedEvent;
 import wiiusej.wiiusejevents.wiiuseapievents.NunchukRemovedEvent;
 import wiiusej.wiiusejevents.wiiuseapievents.StatusEvent;
+import gnu.io.CommPortIdentifier;
+import gnu.io.NoSuchPortException;
+import gnu.io.PortInUseException;
+import gnu.io.SerialPort;
+import gnu.io.UnsupportedCommOperationException;
+
+import java.io.IOException;
+import java.io.OutputStream;
 
 public class WiiMoteController implements WiimoteListener {
 
@@ -39,6 +50,23 @@ public class WiiMoteController implements WiimoteListener {
 	private int y;
 	private ArrayList<Player> players = new ArrayList<Player>();
 	private boolean buttonPressed;
+
+	private ArrayList<Long> times = new ArrayList<Long>();
+	private int sum = 0;
+<<<<<<< HEAD
+	private int index = 0;
+
+
+	//For communication Arduino
+	private static CommPortIdentifier portID;
+	private static SerialPort serialPort;
+	private static OutputStream output;
+
+=======
+	private int index = 1;
+	
+>>>>>>> 61fd1abcfa11602314c102ceaeb0a5fbc245f533
+
 
 	public WiiMoteController() {
 		this.model = new WiiMoteModel();
@@ -67,46 +95,89 @@ public class WiiMoteController implements WiimoteListener {
 				wiimotes[i].activateContinuous();
 				wiimotes[i].addWiiMoteEventListeners(this);
 				wiimotes[i].setIrSensitivity(99);
-				players.add(new Player());				
+				getPlayers().add(new Player());				
 			}
 		}
+		connectArduino("COM6");
 
-
+		//		try 
+		//		{
+		//			output.write(150);
+		//		} 
+		//		catch (IOException e) 
+		//		{
+		//			e.printStackTrace();
+		//		}
+		//serialPort.close();
 	}
+
+
+
 
 	@Override
 	public void onButtonsEvent(WiimoteButtonsEvent arg0) 
 	{
+
 		int player = arg0.getWiimoteId();
-		if(arg0.isButtonBJustPressed() && !buttonPressed)
+		if(arg0.isButtonAJustPressed())
+		{
+			switch(player)
+			{
+			case 1: model.playReload();
+			getPlayers().get(0).reload();
+			break;
+
+			case 2: model.playReload();
+			getPlayers().get(1).reload();
+			break;
+
+			default: break;
+			}
+		}
+		else if(arg0.isButtonBJustPressed() && !buttonPressed)
 		{
 			buttonPressed = true;
 			switch(player)
 			{
 			case 1: 
-				if(players.get(0).getBullets() > 0)
+				if(getPlayers().get(0).getBullets() > 0)
 				{
 					model.playShot();
-					players.get(0).shot();
-					System.out.println("BULLETSSS:    " + players.get(0).getBullets() + "-------------");
-				}				
-				if(players.get(0).getAmountIR() > 1)
-					players.get(0).setScore(players.get(0).getScore() + 1);
+					getPlayers().get(0).shot();
+
+					if(getPlayers().get(0).getAmountIR() > 0)
+					{
+						Point2D.Double point = new Point2D.Double(getPlayers().get(0).getIrsource()[0].getX(), getPlayers().get(0).getIrsource()[0].getY());
+						int dist = (int) point.distance(new Point2D.Double(512, 384));
+						getPlayers().get(0).hit(dist);
+					}
+					try{getPlayers().get(1).setDeaths(getPlayers().get(1).getDeaths() + 1);} catch(Exception e){}
+				}
+				else
+				{
+					model.playEmpty();
+				}
+
 				break;
 
 			case 2: 
-				if(players.get(1).getBullets() > 0)
+				if(getPlayers().get(1).getBullets() > 0)
 				{
 					model.playShot();
-					players.get(1).shot();
-<<<<<<< HEAD
+					getPlayers().get(1).shot();
+
+					if(getPlayers().get(1).getAmountIR() > 0)
+					{
+						Point2D.Double point = new Point2D.Double(getPlayers().get(1).getIrsource()[0].getX(), getPlayers().get(1).getIrsource()[0].getY());
+						int dist = (int) point.distance(new Point2D.Double(512, 384));
+						getPlayers().get(1).hit(dist);
+					}
 				}
-=======
-				System.out.println("BULLETSSS:    " + players.get(1).getBullets() + "-------------");
->>>>>>> 58379fa438df38ffb13b7b3d5e8e8309acaeb7c3
-				if(players.get(1).getAmountIR() > 1)
-					players.get(1).setScore(players.get(1).getScore() + 1);
-				System.out.println("BULLETSSS:    " + players.get(1).getBullets() + "-------------");
+				else
+				{
+					model.playEmpty();
+				}
+
 				break;			
 			}
 		}
@@ -114,18 +185,36 @@ public class WiiMoteController implements WiimoteListener {
 		{
 			buttonPressed = false;
 		}
-		
 	}
 
-	public int getScoreP1()
+
+
+
+	public int getScore(int player)
 	{
 		try{
-		return players.get(0).getScore();}
+			return getPlayers().get(player-1).getScore();}
 		catch(Exception e){return 0;}
 	}
-	public int getScoreP2()
-	{	try{
-		return players.get(1).getScore();}
+
+	public double getAccuracy(int player)
+	{
+		try{
+			return getPlayers().get(player-1).getAccuracy();}
+		catch(Exception e){return 0;}	
+	}
+
+	public int getHits(int player)
+	{
+		try{
+			return getPlayers().get(player-1).getHit();}
+		catch(Exception e){return 0;}
+	}
+
+	public int getShots(int player)
+	{
+		try{
+			return getPlayers().get(player-1).getShots();}
 		catch(Exception e){return 0;}
 	}
 
@@ -133,6 +222,7 @@ public class WiiMoteController implements WiimoteListener {
 	public void onClassicControllerInsertedEvent(
 			ClassicControllerInsertedEvent arg0) 
 	{
+
 		// TODO Auto-generated method stub
 
 	}
@@ -152,6 +242,7 @@ public class WiiMoteController implements WiimoteListener {
 
 	@Override
 	public void onExpansionEvent(ExpansionEvent arg0) {
+
 	}
 
 	@Override
@@ -169,36 +260,100 @@ public class WiiMoteController implements WiimoteListener {
 	@Override
 	public void onIrEvent(IREvent arg0) {
 
-		int player = arg0.getWiimoteId();			
+		int player = arg0.getWiimoteId();
+
+		long timeInMillis = 0;
+		long newTimeInMillis = 0;
+		boolean newIRFound = false;
+<<<<<<< HEAD
+
+		index = 0;
+		sum = 0;
+=======
+>>>>>>> 61fd1abcfa11602314c102ceaeb0a5fbc245f533
+
 		switch(player)
 		{
-		case 1: players.get(0).setAmountIR(arg0.getIRPoints().length);
-		players.get(0).setIrsource(arg0.getIRPoints());
+		case 1: getPlayers().get(0).setAmountIR(arg0.getIRPoints().length);
+		getPlayers().get(0).setIrsource(arg0.getIRPoints());
 		break;
 
-		case 2: players.get(1).setAmountIR(arg0.getIRPoints().length);
-		players.get(1).setIrsource(arg0.getIRPoints());
-		break;
+		case 2: 
+			getPlayers().get(1).setAmountIR(arg0.getIRPoints().length);	
+			getPlayers().get(1).setIrsource(arg0.getIRPoints());	
+			break;
 
 		default: break;
 		}
+
+
+		//frequency check
+		for(int i = 0; i < 20; i ++)
+		{
+			if(arg0.getIRPoints().length != 0)
+			{
+				timeInMillis = System.currentTimeMillis();
+
+				while(newIRFound == false)
+				{
+					if(arg0.getIRPoints().length != 0)
+					{
+						newTimeInMillis = System.currentTimeMillis();
+						newIRFound = true;
+					}
+				}
+
+				newIRFound = false;
+			}
+
+			times.add(newTimeInMillis - timeInMillis);
+		}
+		//End of frequency check
+
+	}
+
+	public int getFrequency()
+	{
+<<<<<<< HEAD
+		for(int i = 1; i < times.size(); i ++)
+=======
+		int freq = 0;
+		
+		for(int i = 0; i < times.size(); i ++)
+>>>>>>> 61fd1abcfa11602314c102ceaeb0a5fbc245f533
+		{
+			sum += times.get(i);
+			index ++;
+		}
+<<<<<<< HEAD
+
+		return sum/index +1;
+=======
+		
+		freq = sum/index;
+		sum = 0;
+		index = 1;
+		
+		return freq;
+		
+>>>>>>> 61fd1abcfa11602314c102ceaeb0a5fbc245f533
 	}
 
 	public IRSource[] getIrlightsP1() {
 		try{
-		return players.get(0).getIrsource();}
+			return getPlayers().get(0).getIrsource();}
 		catch(Exception e){return null;}
 	}
 	public IRSource[] getIrlightsP2() {
 		try{
-		return players.get(1).getIrsource();}
+			return getPlayers().get(1).getIrsource();}
 		catch(Exception e){return null;}
 	}
 
 
 	public int getAmountP1() {
 		try{
-			return players.get(0).getIrsource().length;
+			return getPlayers().get(0).getIrsource().length;
 		}
 		catch(Exception e)
 		{
@@ -208,7 +363,7 @@ public class WiiMoteController implements WiimoteListener {
 
 	public int getAmountP2() {
 		try{
-			return players.get(0).getIrsource().length;
+			return getPlayers().get(0).getIrsource().length;
 		}
 		catch(Exception e)
 		{
@@ -308,5 +463,52 @@ public class WiiMoteController implements WiimoteListener {
 		y = a_y;
 	}
 
+	public ArrayList<Player> getPlayers() {
+		return players;
+	}
 
+	public void setPlayers(ArrayList<Player> players) {
+		this.players = players;
+	}
+
+	public void connectArduino(String com)
+	{
+		try 
+		{
+			portID = CommPortIdentifier.getPortIdentifier(com); //COM6
+		} catch (NoSuchPortException e) { e.printStackTrace(); }
+
+		try 
+		{
+			serialPort = (SerialPort) portID.open("SimpleWriteApp", 2000);
+		} catch (PortInUseException e) { e.printStackTrace(); }
+
+		try 
+		{
+			output = serialPort.getOutputStream();
+		} catch (IOException e) { e.printStackTrace(); }
+
+		try 
+		{
+			serialPort.setSerialPortParams(9600,
+					SerialPort.DATABITS_8,
+					SerialPort.STOPBITS_1,
+					SerialPort.PARITY_NONE);
+		} 
+		catch (UnsupportedCommOperationException e) {	}
+
+	}
+	
+	public void playerKilled(int playernr)
+	{
+		int send = 30 + playernr;
+			try 
+			{
+				output.write(send);
+			} 
+			catch (IOException e) 
+			{
+				e.printStackTrace();
+			}
+		}
 }

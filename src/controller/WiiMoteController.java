@@ -89,21 +89,13 @@ public class WiiMoteController implements WiimoteListener {
 				wiimotes[i].activateSmoothing();
 				wiimotes[i].activateContinuous();
 				wiimotes[i].addWiiMoteEventListeners(this);
-				wiimotes[i].setIrSensitivity(99);
+				wiimotes[i].setIrSensitivity(10);
 				getPlayers().add(new Player());				
 			}
 		}
-		connectArduino("COM6");
 
-		//		try 
-		//		{
-		//			output.write(150);
-		//		} 
-		//		catch (IOException e) 
-		//		{
-		//			e.printStackTrace();
-		//		}
-		//serialPort.close();
+		//connect to Arduino
+		//connectArduino("COM6");
 	}
 
 
@@ -113,67 +105,46 @@ public class WiiMoteController implements WiimoteListener {
 	public void onButtonsEvent(WiimoteButtonsEvent arg0) 
 	{
 
-		int player = arg0.getWiimoteId();
+		int player = arg0.getWiimoteId()-1;
 		if(arg0.isButtonAJustPressed())
 		{
-			switch(player)
-			{
-			case 1: model.playReload();
-			getPlayers().get(0).reload();
-			break;
-
-			case 2: model.playReload();
-			getPlayers().get(1).reload();
-			break;
-
-			default: break;
-			}
+			model.playReload();
+			getPlayers().get(player).reload();
 		}
 		else if(arg0.isButtonBJustPressed() && !buttonPressed)
 		{
 			buttonPressed = true;
-			switch(player)
+			if(getPlayers().get(player).getBullets() > 0)
 			{
-			case 1: 
-				if(getPlayers().get(0).getBullets() > 0)
+				model.playShot();
+				getPlayers().get(player).shot();
+
+				if(getPlayers().get(player).getAmountIR() > 0)
 				{
-					model.playShot();
-					getPlayers().get(0).shot();
-
-					if(getPlayers().get(0).getAmountIR() > 0)
-					{
-						Point2D.Double point = new Point2D.Double(getPlayers().get(0).getIrsource()[0].getX(), getPlayers().get(0).getIrsource()[0].getY());
-						int dist = (int) point.distance(new Point2D.Double(512, 384));
-						getPlayers().get(0).hit(dist);
-					}
-					try{getPlayers().get(1).setDeaths(getPlayers().get(1).getDeaths() + 1);} catch(Exception e){}
-				}
-				else
+					Point2D.Double point = new Point2D.Double(getPlayers().get(player).getIrsource()[0].getX(), getPlayers().get(player).getIrsource()[0].getY());
+					int dist = (int) point.distance(new Point2D.Double(512, 384));
+					getPlayers().get(player).hit(dist);
+				
+//				try{getPlayers().get(player+1).setDeaths(getPlayers().get(player+1).getDeaths() + 1);}
+//				
+//				catch(Exception e){
+//					try{
+//					getPlayers().get(player-1).setDeaths(getPlayers().get(player-1).getDeaths() + 1);} catch(Exception e1){}
+//				}
+				switch(player)
 				{
-					model.playEmpty();
-				}
-
-				break;
-
-			case 2: 
-				if(getPlayers().get(1).getBullets() > 0)
-				{
-					model.playShot();
-					getPlayers().get(1).shot();
-
-					if(getPlayers().get(1).getAmountIR() > 0)
-					{
-						Point2D.Double point = new Point2D.Double(getPlayers().get(1).getIrsource()[0].getX(), getPlayers().get(1).getIrsource()[0].getY());
-						int dist = (int) point.distance(new Point2D.Double(512, 384));
-						getPlayers().get(1).hit(dist);
-					}
-				}
-				else
-				{
-					model.playEmpty();
-				}
-
-				break;			
+				case 0:
+					try{getPlayers().get(1).setDeaths(getPlayers().get(1).getDeaths() + 1);} catch(Exception e1){}
+					break;
+				case 1:
+					try{getPlayers().get(0).setDeaths(getPlayers().get(0).getDeaths() + 1);} catch(Exception e1){}
+					break;
+				default: break;
+				}}
+			}
+			else
+			{
+				model.playEmpty();
 			}
 		}
 		if(arg0.isButtonBJustReleased())
@@ -181,9 +152,6 @@ public class WiiMoteController implements WiimoteListener {
 			buttonPressed = false;
 		}
 	}
-
-
-
 
 	public int getScore(int player)
 	{
@@ -202,7 +170,7 @@ public class WiiMoteController implements WiimoteListener {
 	public int getHits(int player)
 	{
 		try{
-			return getPlayers().get(player-1).getHit();}
+			return getPlayers().get(player-1).getKill();}
 		catch(Exception e){return 0;}
 	}
 
@@ -255,25 +223,13 @@ public class WiiMoteController implements WiimoteListener {
 	@Override
 	public void onIrEvent(IREvent arg0) {
 
-		int player = arg0.getWiimoteId();
+		int player = arg0.getWiimoteId()-1;
 
 		long timeInMillis = 0;
 		long newTimeInMillis = 0;
 		boolean newIRFound = false;
-
-		switch(player)
-		{
-		case 1: getPlayers().get(0).setAmountIR(arg0.getIRPoints().length);
-		getPlayers().get(0).setIrsource(arg0.getIRPoints());
-		break;
-
-		case 2: 
-			getPlayers().get(1).setAmountIR(arg0.getIRPoints().length);	
-			getPlayers().get(1).setIrsource(arg0.getIRPoints());	
-			break;
-
-		default: break;
-		}
+		getPlayers().get(player).setAmountIR(arg0.getIRPoints().length);
+		getPlayers().get(player).setIrsource(arg0.getIRPoints());
 
 
 		//frequency check
@@ -304,7 +260,7 @@ public class WiiMoteController implements WiimoteListener {
 	public int getFrequency()
 	{
 		int freq = 0;
-		
+
 		for(int i = 0; i < times.size(); i ++)
 		{
 			sum += times.get(i);
@@ -314,9 +270,9 @@ public class WiiMoteController implements WiimoteListener {
 		freq = sum/index;
 		sum = 0;
 		index = 1;
-		
+
 		return freq;
-		
+
 	}
 
 	public IRSource[] getIrlightsP1() {
@@ -455,7 +411,7 @@ public class WiiMoteController implements WiimoteListener {
 	{
 		try 
 		{
-			portID = CommPortIdentifier.getPortIdentifier(com); //COM6
+			portID = CommPortIdentifier.getPortIdentifier(com); //Standard COM6
 		} catch (NoSuchPortException e) { e.printStackTrace(); }
 
 		try 
@@ -476,19 +432,18 @@ public class WiiMoteController implements WiimoteListener {
 					SerialPort.PARITY_NONE);
 		} 
 		catch (UnsupportedCommOperationException e) {	}
-
 	}
-	
+
 	public void playerKilled(int playernr)
 	{
-		int send = 30 + playernr;
-			try 
-			{
-				output.write(send);
-			} 
-			catch (IOException e) 
-			{
-				e.printStackTrace();
-			}
+		int send = 48 + playernr;
+		try 
+		{
+			output.write(send);
+		} 
+		catch (IOException e) 
+		{
+			e.printStackTrace();
 		}
+	}
 }
