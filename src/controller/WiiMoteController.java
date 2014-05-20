@@ -53,7 +53,7 @@ public class WiiMoteController implements WiimoteListener {
 
 	private ArrayList<Long> times = new ArrayList<Long>();
 	private int sum = 0;
-	private int index = 0;
+	private int index = 1;
 
 
 	//For communication Arduino
@@ -261,9 +261,6 @@ public class WiiMoteController implements WiimoteListener {
 		long newTimeInMillis = 0;
 		boolean newIRFound = false;
 
-		index = 0;
-		sum = 0;
-
 		switch(player)
 		{
 		case 1: getPlayers().get(0).setAmountIR(arg0.getIRPoints().length);
@@ -306,13 +303,20 @@ public class WiiMoteController implements WiimoteListener {
 
 	public int getFrequency()
 	{
-		for(int i = 1; i < times.size(); i ++)
+		int freq = 0;
+		
+		for(int i = 0; i < times.size(); i ++)
 		{
 			sum += times.get(i);
 			index ++;
 		}
 
-		return sum/index +1;
+		freq = sum/index;
+		sum = 0;
+		index = 1;
+		
+		return freq;
+		
 	}
 
 	public IRSource[] getIrlightsP1() {
