@@ -1,5 +1,6 @@
 package controller;
 
+import java.awt.geom.Point2D;
 import java.io.File;
 import java.util.ArrayList;
 
@@ -16,6 +17,8 @@ import wiiusej.values.Orientation;
 import wiiusej.wiiusejevents.physicalevents.ExpansionEvent;
 import wiiusej.wiiusejevents.physicalevents.IREvent;
 import wiiusej.wiiusejevents.physicalevents.MotionSensingEvent;
+import wiiusej.wiiusejevents.physicalevents.NunchukButtonsEvent;
+import wiiusej.wiiusejevents.physicalevents.NunchukEvent;
 import wiiusej.wiiusejevents.physicalevents.WiimoteButtonsEvent;
 import wiiusej.wiiusejevents.utils.WiimoteListener;
 import wiiusej.wiiusejevents.wiiuseapievents.ClassicControllerInsertedEvent;
@@ -39,6 +42,12 @@ public class WiiMoteController implements WiimoteListener {
 	private int y;
 	private ArrayList<Player> players = new ArrayList<Player>();
 	private boolean buttonPressed;
+
+	private ArrayList<Long> times = new ArrayList<Long>();
+	private int sum = 0;
+	private int index = 0;
+	
+
 
 	public WiiMoteController() {
 		this.model = new WiiMoteModel();
@@ -77,8 +86,24 @@ public class WiiMoteController implements WiimoteListener {
 	@Override
 	public void onButtonsEvent(WiimoteButtonsEvent arg0) 
 	{
+
 		int player = arg0.getWiimoteId();
-		if(arg0.isButtonBJustPressed() && !buttonPressed)
+		if(arg0.isButtonAJustPressed())
+		{
+			switch(player)
+			{
+			case 1: model.playReload();
+			getPlayers().get(0).reload();
+			break;
+
+			case 2: model.playReload();
+			getPlayers().get(1).reload();
+			break;
+
+			default: break;
+			}
+		}
+		else if(arg0.isButtonBJustPressed() && !buttonPressed)
 		{
 			buttonPressed = true;
 			switch(player)
@@ -88,14 +113,16 @@ public class WiiMoteController implements WiimoteListener {
 				{
 					model.playShot();
 					getPlayers().get(0).shot();
-				}				
-				if(getPlayers().get(0).getAmountIR() > 1)
-				{
-					getPlayers().get(0).setScore(getPlayers().get(0).getScore() + 1);
-					getPlayers().get(0).hit();
-					getPlayers().get(0).hit2(getPlayers().get(0).getIrsource()[0].getRy());
+
+					if(getPlayers().get(0).getAmountIR() > 0)
+					{
+						Point2D.Double point = new Point2D.Double(getPlayers().get(0).getIrsource()[0].getX(), getPlayers().get(0).getIrsource()[0].getY());
+						int dist = (int) point.distance(new Point2D.Double(512, 384));
+						getPlayers().get(0).hit(dist);
+					}
 					try{getPlayers().get(1).setDeaths(getPlayers().get(1).getDeaths() + 1);} catch(Exception e){}
 				}
+
 				break;
 
 			case 2: 
@@ -103,13 +130,13 @@ public class WiiMoteController implements WiimoteListener {
 				{
 					model.playShot();
 					getPlayers().get(1).shot();
-				}
-				if(getPlayers().get(1).getAmountIR() > 1)
-				{
-					getPlayers().get(1).setScore(getPlayers().get(1).getScore() + 1);
-					getPlayers().get(1).hit();
-					getPlayers().get(0).setDeaths(getPlayers().get(0).getDeaths() + 1);
-					getPlayers().get(1).hit2(getPlayers().get(1).getIrsource()[0].getRy());
+
+					if(getPlayers().get(1).getAmountIR() > 0)
+					{
+						Point2D.Double point = new Point2D.Double(getPlayers().get(1).getIrsource()[0].getX(), getPlayers().get(1).getIrsource()[0].getY());
+						int dist = (int) point.distance(new Point2D.Double(512, 384));
+						getPlayers().get(1).hit(dist);
+					}
 				}
 				break;			
 			}
@@ -118,35 +145,37 @@ public class WiiMoteController implements WiimoteListener {
 		{
 			buttonPressed = false;
 		}
-		
 	}
+
+
+
 
 	public int getScore(int player)
 	{
 		try{
-		return getPlayers().get(player-1).getScore();}
+			return getPlayers().get(player-1).getScore();}
 		catch(Exception e){return 0;}
 	}
-	
+
 	public double getAccuracy(int player)
 	{
 		try{
 			return getPlayers().get(player-1).getAccuracy();}
-			catch(Exception e){return 0;}	
+		catch(Exception e){return 0;}	
 	}
-	
+
 	public int getHits(int player)
 	{
 		try{
 			return getPlayers().get(player-1).getHit();}
-			catch(Exception e){return 0;}
+		catch(Exception e){return 0;}
 	}
-	
+
 	public int getShots(int player)
 	{
 		try{
 			return getPlayers().get(player-1).getShots();}
-			catch(Exception e){return 0;}
+		catch(Exception e){return 0;}
 	}
 
 	@Override
@@ -172,6 +201,17 @@ public class WiiMoteController implements WiimoteListener {
 
 	@Override
 	public void onExpansionEvent(ExpansionEvent arg0) {
+		//		if(arg0 instanceof NunchukEvent)
+		//		{
+		//			
+		//			NunchukEvent nun = (NunchukEvent) arg0;
+		//			NunchukButtonsEvent buttons = nun.getButtonsEvent();
+		//			if(buttons.isButtonCPressed())
+		//			{
+		//				
+		//				model.playReload();
+		//			}
+		//		}
 	}
 
 	@Override
@@ -189,7 +229,15 @@ public class WiiMoteController implements WiimoteListener {
 	@Override
 	public void onIrEvent(IREvent arg0) {
 
-		int player = arg0.getWiimoteId();			
+		int player = arg0.getWiimoteId();
+		
+		long timeInMillis = 0;
+		long newTimeInMillis = 0;
+		boolean newIRFound = false;
+		
+		index = 0;
+		sum = 0;
+
 		switch(player)
 		{
 		case 1: getPlayers().get(0).setAmountIR(arg0.getIRPoints().length);
@@ -197,24 +245,56 @@ public class WiiMoteController implements WiimoteListener {
 		break;
 
 		case 2: 
-		getPlayers().get(1).setAmountIR(arg0.getIRPoints().length);	
-		getPlayers().get(1).setIrsource(arg0.getIRPoints());	
-		break;
+			getPlayers().get(1).setAmountIR(arg0.getIRPoints().length);	
+			getPlayers().get(1).setIrsource(arg0.getIRPoints());	
+			break;
 
-	
-		
 		default: break;
 		}
+
+
+		//frequency check
+		for(int i = 0; i < 20; i ++)
+		{
+			if(arg0.getIRPoints().length != 0)
+			{
+				timeInMillis = System.currentTimeMillis();
+
+				while(newIRFound == false)
+				{
+					if(arg0.getIRPoints().length != 0)
+					{
+						newTimeInMillis = System.currentTimeMillis();
+						newIRFound = true;
+					}
+				}
+			}
+
+			times.add(newTimeInMillis - timeInMillis);
+		}
+		//End of frequency check
+		
+	}
+	
+	public int getFrequency()
+	{
+		for(int i = 0; i < times.size(); i ++)
+		{
+			sum += times.get(i);
+			index ++;
+		}
+		
+		return sum/index;
 	}
 
 	public IRSource[] getIrlightsP1() {
 		try{
-		return getPlayers().get(0).getIrsource();}
+			return getPlayers().get(0).getIrsource();}
 		catch(Exception e){return null;}
 	}
 	public IRSource[] getIrlightsP2() {
 		try{
-		return getPlayers().get(1).getIrsource();}
+			return getPlayers().get(1).getIrsource();}
 		catch(Exception e){return null;}
 	}
 
