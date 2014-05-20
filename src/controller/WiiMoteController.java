@@ -29,6 +29,14 @@ import wiiusej.wiiusejevents.wiiuseapievents.GuitarHeroRemovedEvent;
 import wiiusej.wiiusejevents.wiiuseapievents.NunchukInsertedEvent;
 import wiiusej.wiiusejevents.wiiuseapievents.NunchukRemovedEvent;
 import wiiusej.wiiusejevents.wiiuseapievents.StatusEvent;
+import gnu.io.CommPortIdentifier;
+import gnu.io.NoSuchPortException;
+import gnu.io.PortInUseException;
+import gnu.io.SerialPort;
+import gnu.io.UnsupportedCommOperationException;
+
+import java.io.IOException;
+import java.io.OutputStream;
 
 public class WiiMoteController implements WiimoteListener {
 
@@ -46,7 +54,13 @@ public class WiiMoteController implements WiimoteListener {
 	private ArrayList<Long> times = new ArrayList<Long>();
 	private int sum = 0;
 	private int index = 0;
-	
+
+
+	//For communication Arduino
+	private static CommPortIdentifier portID;
+	private static SerialPort serialPort;
+	private static OutputStream output;
+
 
 
 	public WiiMoteController() {
@@ -79,9 +93,21 @@ public class WiiMoteController implements WiimoteListener {
 				getPlayers().add(new Player());				
 			}
 		}
+		connectArduino("COM6");
 
-
+		//		try 
+		//		{
+		//			output.write(150);
+		//		} 
+		//		catch (IOException e) 
+		//		{
+		//			e.printStackTrace();
+		//		}
+		//serialPort.close();
 	}
+
+
+
 
 	@Override
 	public void onButtonsEvent(WiimoteButtonsEvent arg0) 
@@ -146,7 +172,7 @@ public class WiiMoteController implements WiimoteListener {
 				{
 					model.playEmpty();
 				}
-				
+
 				break;			
 			}
 		}
@@ -191,6 +217,7 @@ public class WiiMoteController implements WiimoteListener {
 	public void onClassicControllerInsertedEvent(
 			ClassicControllerInsertedEvent arg0) 
 	{
+
 		// TODO Auto-generated method stub
 
 	}
@@ -210,17 +237,7 @@ public class WiiMoteController implements WiimoteListener {
 
 	@Override
 	public void onExpansionEvent(ExpansionEvent arg0) {
-		//		if(arg0 instanceof NunchukEvent)
-		//		{
-		//			
-		//			NunchukEvent nun = (NunchukEvent) arg0;
-		//			NunchukButtonsEvent buttons = nun.getButtonsEvent();
-		//			if(buttons.isButtonCPressed())
-		//			{
-		//				
-		//				model.playReload();
-		//			}
-		//		}
+
 	}
 
 	@Override
@@ -239,11 +256,11 @@ public class WiiMoteController implements WiimoteListener {
 	public void onIrEvent(IREvent arg0) {
 
 		int player = arg0.getWiimoteId();
-		
+
 		long timeInMillis = 0;
 		long newTimeInMillis = 0;
 		boolean newIRFound = false;
-		
+
 		index = 0;
 		sum = 0;
 
@@ -277,25 +294,25 @@ public class WiiMoteController implements WiimoteListener {
 						newIRFound = true;
 					}
 				}
-				
+
 				newIRFound = false;
 			}
 
 			times.add(newTimeInMillis - timeInMillis);
 		}
 		//End of frequency check
-		
+
 	}
-	
+
 	public int getFrequency()
 	{
-		for(int i = 0; i < times.size(); i ++)
+		for(int i = 1; i < times.size(); i ++)
 		{
 			sum += times.get(i);
 			index ++;
 		}
-		
-		return sum/index;
+
+		return sum/index +1;
 	}
 
 	public IRSource[] getIrlightsP1() {
@@ -430,5 +447,44 @@ public class WiiMoteController implements WiimoteListener {
 		this.players = players;
 	}
 
+	public void connectArduino(String com)
+	{
+		try 
+		{
+			portID = CommPortIdentifier.getPortIdentifier(com); //COM6
+		} catch (NoSuchPortException e) { e.printStackTrace(); }
 
+		try 
+		{
+			serialPort = (SerialPort) portID.open("SimpleWriteApp", 2000);
+		} catch (PortInUseException e) { e.printStackTrace(); }
+
+		try 
+		{
+			output = serialPort.getOutputStream();
+		} catch (IOException e) { e.printStackTrace(); }
+
+		try 
+		{
+			serialPort.setSerialPortParams(9600,
+					SerialPort.DATABITS_8,
+					SerialPort.STOPBITS_1,
+					SerialPort.PARITY_NONE);
+		} 
+		catch (UnsupportedCommOperationException e) {	}
+
+	}
+	
+	public void playerKilled(int playernr)
+	{
+		int send = 30 + playernr;
+			try 
+			{
+				output.write(send);
+			} 
+			catch (IOException e) 
+			{
+				e.printStackTrace();
+			}
+		}
 }
