@@ -122,6 +122,10 @@ public class WiiMoteController implements WiimoteListener {
 					}
 					try{getPlayers().get(1).setDeaths(getPlayers().get(1).getDeaths() + 1);} catch(Exception e){}
 				}
+				else
+				{
+					model.playEmpty();
+				}
 
 				break;
 
@@ -138,6 +142,11 @@ public class WiiMoteController implements WiimoteListener {
 						getPlayers().get(1).hit(dist);
 					}
 				}
+				else
+				{
+					model.playEmpty();
+				}
+				
 				break;			
 			}
 		}

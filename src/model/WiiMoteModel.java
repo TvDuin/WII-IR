@@ -10,6 +10,7 @@ public class WiiMoteModel
 {
 	private Clip clip;
 	private Clip reload;
+	private Clip empty;
 	
 	public WiiMoteModel()
 	{
@@ -31,6 +32,16 @@ public class WiiMoteModel
 		catch(Exception e)
 		{
 			e.printStackTrace();
+		}
+		
+		try{
+			empty = AudioSystem.getClip();
+			AudioInputStream inputstream = AudioSystem.getAudioInputStream(new File("empty.wav"));
+			empty.open(inputstream);
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
 		}	
 	}
 	
@@ -44,5 +55,11 @@ public class WiiMoteModel
 	{
 		reload.setMicrosecondPosition(0);
 		reload.start();	
+	}
+	
+	public void playEmpty()
+	{
+		empty.setMicrosecondPosition(0);
+		empty.start();
 	}
 }
