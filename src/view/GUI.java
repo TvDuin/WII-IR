@@ -15,6 +15,7 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -71,9 +72,10 @@ class EllipsePanel extends JPanel implements ActionListener
 	private int accuracy = 0;
 	private int xPos = 850;
 	public int playernr;
+	public int bulletCount;
 	private Image background = Toolkit.getDefaultToolkit().createImage("background3.png");
 	private Image bullet = Toolkit.getDefaultToolkit().createImage("bullet.png");
-	private ArrayList<Image> bullets = new ArrayList<>();
+	private ArrayList<ImageIcon> bullets = new ArrayList<>();
 	
 	public EllipsePanel(String name, int playernr)
 	{
@@ -81,10 +83,6 @@ class EllipsePanel extends JPanel implements ActionListener
 		this.playernr = playernr;
 		this.name = name;
 		t.start();
-		for(int i = 0; i < 25; i++){
-			Image bullet = Toolkit.getDefaultToolkit().createImage("bullet.png");
-			bullets.add(bullet);
-		}
 	}
 	
 	
@@ -99,14 +97,12 @@ class EllipsePanel extends JPanel implements ActionListener
 		Font f = new Font(Font.MONOSPACED, Font.BOLD, 20);
 		g2.setFont(f);
 		
-		
-		int bulletnr = controller.getPlayers().get(playernr).getBullets();
-		for(int i = 0; i < bulletnr; i++)
-		{
+		for(int i = 0; i < 25; i++){
 			g2.drawImage(bullet, xPos, 50, null);
 			xPos += 15;
 		}
-		xPos = 800;
+		xPos = 850;
+		
 		g2.drawString("Name: ", 600, 75);
 		g2.drawString("Score: ", 650, 125);
 		g2.drawString("Kills: ", 650, 150);
@@ -130,7 +126,8 @@ class EllipsePanel extends JPanel implements ActionListener
 		kills = (int)controller.getPlayers().get(playernr).getHit(); 
 		deaths = (int)controller.getPlayers().get(playernr).getDeaths();
 		shots = (int)controller.getPlayers().get(playernr).getShots();
-		accuracy =(int)controller.getPlayers().get(playernr).getAccuracy();
+		accuracy = (int)controller.getPlayers().get(playernr).getAccuracy();
+		bulletCount = (int)controller.getPlayers().get(playernr).getBullets();
 		repaint();
 	}
 }
