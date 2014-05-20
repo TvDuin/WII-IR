@@ -119,7 +119,6 @@ class EllipsePanel extends JPanel implements ActionListener
 		xPos = 850;
 		}
 		catch(Exception e){}
-		g2.drawLine(0, 360, 1425, 360);
 	}
 
 	@Override
