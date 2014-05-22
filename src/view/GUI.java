@@ -30,37 +30,50 @@ import controller.WiiMoteController;
 import model.Player;
 
 public class GUI 
-{	
-	private static String player1Name;
-	private static String player2Name;
-	public static JPanel[] panels = new JPanel[2];
+{
+	private static ArrayList<String> names;
+	private static int playersnmb;
+	public static ArrayList<EllipsePanel> panels;
 	
 	public static void main(String[] args)
 	{		
 		JFrame frame = new JFrame("Infra Shooter");
 		frame.setPreferredSize(new Dimension(1425,759));
-		//1425 x 360
-		//frame.setExtendedState(frame.getExtendedState()|JFrame.MAXIMIZED_BOTH);
-		frame.setLayout(new BorderLayout());
+		frame.setLayout(new BorderLayout());		
 		frame.setResizable(false);
 		
 		
-		
+		names = new ArrayList<String>();
+		panels = new ArrayList<EllipsePanel>();
 		JPanel centerPanel = new JPanel();
+		Integer[] possibilities = {1, 2, 3, 4};
+		playersnmb = (int) JOptionPane.showInputDialog(frame,"Selecteer het aantal spelers","Customized Dialog",JOptionPane.PLAIN_MESSAGE,null, possibilities,1);
 		
-		player1Name = JOptionPane.showInputDialog("Enter name player1: ");
-		player2Name = JOptionPane.showInputDialog("Enter name player2: ");
+		
+		for(int i = 1; i <= playersnmb; i++)
+		{
+			String name = JOptionPane.showInputDialog("Enter name player " + i + ": ");
+			names.add(name);
+			System.out.println("Name Added");
+		}
+		
 		JOptionPane.showMessageDialog(frame, "Houdt uw WiiMotes uit het licht en klik op 'OK' ");
-	
+		int idx = 0;
+		while(idx < playersnmb)
+		{
+			panels.add(new EllipsePanel(names.get(idx), idx));
+			panels.get(idx).setPreferredSize(new Dimension(1425, 360));
+			System.out.println(panels.size());
+			System.out.println("Panel Added");
+			idx++;
+		}
 		
-		panels[0] = new EllipsePanel(player1Name, 0);
-		panels[0].setPreferredSize(new Dimension(1425, 360));
-		panels[1] = new EllipsePanel(player2Name, 1);
-		panels[1].setPreferredSize(new Dimension(1425, 360));
-		
-		centerPanel.setLayout(new GridLayout(2,1));
-		centerPanel.add(panels[0]);
-		centerPanel.add(panels[1]);
+		centerPanel.setLayout(new GridLayout(playersnmb,1));
+		for(int s = 0; s<panels.size(); s++)
+		{
+			centerPanel.add(panels.get(s));
+			System.out.println("Pannel added to centerPanel");
+		}
 		
 		frame.getContentPane().add(BorderLayout.CENTER, centerPanel);
 		

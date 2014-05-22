@@ -69,7 +69,7 @@ public class WiiMoteController implements WiimoteListener {
 
 		// init WiiMote
 		// 
-		wiimotes = WiiUseApiManager.getWiimotes(2, true);
+		wiimotes = WiiUseApiManager.getWiimotes(4, true);
 		if(wiimotes != null)
 		{
 			try{
@@ -90,7 +90,7 @@ public class WiiMoteController implements WiimoteListener {
 				wiimotes[i].activateContinuous();
 				wiimotes[i].addWiiMoteEventListeners(this);
 				wiimotes[i].setIrSensitivity(10);
-				getPlayers().add(new Player());				
+				players.add(new Player());
 			}
 		}
 
@@ -116,7 +116,7 @@ public class WiiMoteController implements WiimoteListener {
 			buttonPressed = true;
 			if(getPlayers().get(player).getBullets() > 0)
 			{
-				model.playShot(player);
+				model.playShot();
 				getPlayers().get(player).shot();
 
 				if(getPlayers().get(player).getAmountIR() > 0)
@@ -137,6 +137,9 @@ public class WiiMoteController implements WiimoteListener {
 					try{getPlayers().get(1).setDeaths(getPlayers().get(1).getDeaths() + 1);} catch(Exception e1){}
 					break;
 				case 1:
+					try{getPlayers().get(0).setDeaths(getPlayers().get(0).getDeaths() + 1);} catch(Exception e1){}
+					break;
+				case 2:
 					try{getPlayers().get(0).setDeaths(getPlayers().get(0).getDeaths() + 1);} catch(Exception e1){}
 					break;
 				default: break;
