@@ -53,7 +53,8 @@ public class WiiMoteController implements WiimoteListener {
 
 	private ArrayList<Long> times = new ArrayList<Long>();
 	private int sum = 0;
-	private int index = 1;
+<<<<<<< HEAD
+	private int index = 0;
 
 
 	//For communication Arduino
@@ -61,6 +62,10 @@ public class WiiMoteController implements WiimoteListener {
 	private static SerialPort serialPort;
 	private static OutputStream output;
 
+=======
+	private int index = 1;
+	
+>>>>>>> 61fd1abcfa11602314c102ceaeb0a5fbc245f533
 
 
 	public WiiMoteController() {
@@ -89,13 +94,21 @@ public class WiiMoteController implements WiimoteListener {
 				wiimotes[i].activateSmoothing();
 				wiimotes[i].activateContinuous();
 				wiimotes[i].addWiiMoteEventListeners(this);
-				wiimotes[i].setIrSensitivity(10);
+				wiimotes[i].setIrSensitivity(99);
 				getPlayers().add(new Player());				
 			}
 		}
+		connectArduino("COM6");
 
-		//connect to Arduino
-		//connectArduino("COM6");
+		//		try 
+		//		{
+		//			output.write(150);
+		//		} 
+		//		catch (IOException e) 
+		//		{
+		//			e.printStackTrace();
+		//		}
+		//serialPort.close();
 	}
 
 
@@ -105,46 +118,67 @@ public class WiiMoteController implements WiimoteListener {
 	public void onButtonsEvent(WiimoteButtonsEvent arg0) 
 	{
 
-		int player = arg0.getWiimoteId()-1;
+		int player = arg0.getWiimoteId();
 		if(arg0.isButtonAJustPressed())
 		{
-			model.playReload();
-			getPlayers().get(player).reload();
+			switch(player)
+			{
+			case 1: model.playReload();
+			getPlayers().get(0).reload();
+			break;
+
+			case 2: model.playReload();
+			getPlayers().get(1).reload();
+			break;
+
+			default: break;
+			}
 		}
 		else if(arg0.isButtonBJustPressed() && !buttonPressed)
 		{
 			buttonPressed = true;
-			if(getPlayers().get(player).getBullets() > 0)
+			switch(player)
 			{
-				model.playShot(player);
-				getPlayers().get(player).shot();
+			case 1: 
+				if(getPlayers().get(0).getBullets() > 0)
+				{
+					model.playShot();
+					getPlayers().get(0).shot();
 
-				if(getPlayers().get(player).getAmountIR() > 0)
+					if(getPlayers().get(0).getAmountIR() > 0)
+					{
+						Point2D.Double point = new Point2D.Double(getPlayers().get(0).getIrsource()[0].getX(), getPlayers().get(0).getIrsource()[0].getY());
+						int dist = (int) point.distance(new Point2D.Double(512, 384));
+						getPlayers().get(0).hit(dist);
+					}
+					try{getPlayers().get(1).setDeaths(getPlayers().get(1).getDeaths() + 1);} catch(Exception e){}
+				}
+				else
 				{
-					Point2D.Double point = new Point2D.Double(getPlayers().get(player).getIrsource()[0].getX(), getPlayers().get(player).getIrsource()[0].getY());
-					int dist = (int) point.distance(new Point2D.Double(512, 384));
-					getPlayers().get(player).hit(dist);
-				
-//				try{getPlayers().get(player+1).setDeaths(getPlayers().get(player+1).getDeaths() + 1);}
-//				
-//				catch(Exception e){
-//					try{
-//					getPlayers().get(player-1).setDeaths(getPlayers().get(player-1).getDeaths() + 1);} catch(Exception e1){}
-//				}
-				switch(player)
+					model.playEmpty();
+				}
+
+				break;
+
+			case 2: 
+				if(getPlayers().get(1).getBullets() > 0)
 				{
-				case 0:
-					try{getPlayers().get(1).setDeaths(getPlayers().get(1).getDeaths() + 1);} catch(Exception e1){}
-					break;
-				case 1:
-					try{getPlayers().get(0).setDeaths(getPlayers().get(0).getDeaths() + 1);} catch(Exception e1){}
-					break;
-				default: break;
-				}}
-			}
-			else
-			{
-				model.playEmpty();
+					model.playShot();
+					getPlayers().get(1).shot();
+
+					if(getPlayers().get(1).getAmountIR() > 0)
+					{
+						Point2D.Double point = new Point2D.Double(getPlayers().get(1).getIrsource()[0].getX(), getPlayers().get(1).getIrsource()[0].getY());
+						int dist = (int) point.distance(new Point2D.Double(512, 384));
+						getPlayers().get(1).hit(dist);
+					}
+				}
+				else
+				{
+					model.playEmpty();
+				}
+
+				break;			
 			}
 		}
 		if(arg0.isButtonBJustReleased())
@@ -152,6 +186,9 @@ public class WiiMoteController implements WiimoteListener {
 			buttonPressed = false;
 		}
 	}
+
+
+
 
 	public int getScore(int player)
 	{
@@ -170,7 +207,7 @@ public class WiiMoteController implements WiimoteListener {
 	public int getHits(int player)
 	{
 		try{
-			return getPlayers().get(player-1).getKill();}
+			return getPlayers().get(player-1).getHit();}
 		catch(Exception e){return 0;}
 	}
 
@@ -223,13 +260,31 @@ public class WiiMoteController implements WiimoteListener {
 	@Override
 	public void onIrEvent(IREvent arg0) {
 
-		int player = arg0.getWiimoteId()-1;
+		int player = arg0.getWiimoteId();
 
 		long timeInMillis = 0;
 		long newTimeInMillis = 0;
 		boolean newIRFound = false;
-		getPlayers().get(player).setAmountIR(arg0.getIRPoints().length);
-		getPlayers().get(player).setIrsource(arg0.getIRPoints());
+<<<<<<< HEAD
+
+		index = 0;
+		sum = 0;
+=======
+>>>>>>> 61fd1abcfa11602314c102ceaeb0a5fbc245f533
+
+		switch(player)
+		{
+		case 1: getPlayers().get(0).setAmountIR(arg0.getIRPoints().length);
+		getPlayers().get(0).setIrsource(arg0.getIRPoints());
+		break;
+
+		case 2: 
+			getPlayers().get(1).setAmountIR(arg0.getIRPoints().length);	
+			getPlayers().get(1).setIrsource(arg0.getIRPoints());	
+			break;
+
+		default: break;
+		}
 
 
 		//frequency check
@@ -259,20 +314,29 @@ public class WiiMoteController implements WiimoteListener {
 
 	public int getFrequency()
 	{
+<<<<<<< HEAD
+		for(int i = 1; i < times.size(); i ++)
+=======
 		int freq = 0;
-
+		
 		for(int i = 0; i < times.size(); i ++)
+>>>>>>> 61fd1abcfa11602314c102ceaeb0a5fbc245f533
 		{
 			sum += times.get(i);
 			index ++;
 		}
+<<<<<<< HEAD
 
+		return sum/index +1;
+=======
+		
 		freq = sum/index;
 		sum = 0;
 		index = 1;
-
+		
 		return freq;
-
+		
+>>>>>>> 61fd1abcfa11602314c102ceaeb0a5fbc245f533
 	}
 
 	public IRSource[] getIrlightsP1() {
@@ -411,7 +475,7 @@ public class WiiMoteController implements WiimoteListener {
 	{
 		try 
 		{
-			portID = CommPortIdentifier.getPortIdentifier(com); //Standard COM6
+			portID = CommPortIdentifier.getPortIdentifier(com); //COM6
 		} catch (NoSuchPortException e) { e.printStackTrace(); }
 
 		try 
@@ -432,18 +496,19 @@ public class WiiMoteController implements WiimoteListener {
 					SerialPort.PARITY_NONE);
 		} 
 		catch (UnsupportedCommOperationException e) {	}
-	}
 
+	}
+	
 	public void playerKilled(int playernr)
 	{
-		int send = 48 + playernr;
-		try 
-		{
-			output.write(send);
-		} 
-		catch (IOException e) 
-		{
-			e.printStackTrace();
+		int send = 30 + playernr;
+			try 
+			{
+				output.write(send);
+			} 
+			catch (IOException e) 
+			{
+				e.printStackTrace();
+			}
 		}
-	}
 }

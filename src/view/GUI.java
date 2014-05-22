@@ -21,6 +21,9 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
+import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.Timer;
 
 import controller.WiiMoteController;
@@ -35,14 +38,20 @@ public class GUI
 	public static void main(String[] args)
 	{		
 		JFrame frame = new JFrame("Infra Shooter");
+		frame.setPreferredSize(new Dimension(1425,759));
 		//1425 x 360
 		//frame.setExtendedState(frame.getExtendedState()|JFrame.MAXIMIZED_BOTH);
 		frame.setLayout(new BorderLayout());
 		frame.setResizable(false);
+		
+		
+		
 		JPanel centerPanel = new JPanel();
 		
 		player1Name = JOptionPane.showInputDialog("Enter name player1: ");
 		player2Name = JOptionPane.showInputDialog("Enter name player2: ");
+		JOptionPane.showMessageDialog(frame, "Houdt uw WiiMotes uit het licht en klik op 'OK' ");
+	
 		
 		panels[0] = new EllipsePanel(player1Name, 0);
 		panels[0].setPreferredSize(new Dimension(1425, 360));
@@ -54,6 +63,11 @@ public class GUI
 		centerPanel.add(panels[1]);
 		
 		frame.getContentPane().add(BorderLayout.CENTER, centerPanel);
+		
+		JScrollPane sp = new JScrollPane(centerPanel);
+		sp.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+		sp.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		frame.getContentPane().add(BorderLayout.CENTER,sp);
 		
 		frame.setDefaultCloseOperation(frame.EXIT_ON_CLOSE);	
 		frame.pack();
