@@ -130,8 +130,6 @@ public class WiiMoteController implements WiimoteListener {
 					int dist = (int) point.distance(new Point2D.Double(512, 384));
 					getPlayers().get(player).hit(dist);
 					}
-					getPlayers().get(player).setAmountIR(0);
-					getPlayers().get(player).setIrsource(null);
 //				try{getPlayers().get(player+1).setDeaths(getPlayers().get(player+1).getDeaths() + 1);}
 //				
 //				catch(Exception e){
@@ -160,6 +158,9 @@ public class WiiMoteController implements WiimoteListener {
 		if(arg0.isButtonBJustReleased())
 		{
 			buttonPressed = false;
+			getPlayers().get(player).setAmountIR(0);
+			getPlayers().get(player).setIrsource(null);
+			
 		}
 	}
 
@@ -264,7 +265,6 @@ public class WiiMoteController implements WiimoteListener {
 			times.add(newTimeInMillis - timeInMillis);
 		}
 		//End of frequency check
-
 	}
 
 	public int getFrequency()
