@@ -121,9 +121,12 @@ public class WiiMoteController implements WiimoteListener {
 
 				if(getPlayers().get(player).getAmountIR() > 0)
 				{
-					Point2D.Double point = new Point2D.Double(getPlayers().get(player).getIrsource()[0].getX(), getPlayers().get(player).getIrsource()[0].getY());
+					for(int i = 0; i < getPlayers().get(player).getAmountIR(); i++)
+					{
+					Point2D.Double point = new Point2D.Double(getPlayers().get(player).getIrsource()[i].getX(), getPlayers().get(player).getIrsource()[i].getY());
 					int dist = (int) point.distance(new Point2D.Double(512, 384));
 					getPlayers().get(player).hit(dist);
+					}
 				
 //				try{getPlayers().get(player+1).setDeaths(getPlayers().get(player+1).getDeaths() + 1);}
 //				
