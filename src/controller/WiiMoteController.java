@@ -95,7 +95,9 @@ public class WiiMoteController implements WiimoteListener {
 		}
 
 		//connect to Arduino
-		//connectArduino("COM6");
+		connectArduino("COM10");
+		
+
 	}
 
 
@@ -121,13 +123,15 @@ public class WiiMoteController implements WiimoteListener {
 
 				if(getPlayers().get(player).getAmountIR() > 0)
 				{
+					playerKilled(1);
 					for(int i = 0; i < getPlayers().get(player).getAmountIR(); i++)
 					{
 					Point2D.Double point = new Point2D.Double(getPlayers().get(player).getIrsource()[i].getX(), getPlayers().get(player).getIrsource()[i].getY());
 					int dist = (int) point.distance(new Point2D.Double(512, 384));
 					getPlayers().get(player).hit(dist);
 					}
-				
+					getPlayers().get(player).setAmountIR(0);
+					getPlayers().get(player).setIrsource(null);
 //				try{getPlayers().get(player+1).setDeaths(getPlayers().get(player+1).getDeaths() + 1);}
 //				
 //				catch(Exception e){
@@ -442,6 +446,7 @@ public class WiiMoteController implements WiimoteListener {
 
 	public void playerKilled(int playernr)
 	{
+		//48 ascii is 0
 		int send = 48 + playernr;
 		try 
 		{
