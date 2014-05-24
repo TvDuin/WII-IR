@@ -98,7 +98,9 @@ public class WiiMoteController implements WiimoteListener {
 		}
 
 		//connect to Arduino
-		//connectArduino("COM6");
+		connectArduino("COM10");
+
+
 	}
 
 
@@ -124,30 +126,41 @@ public class WiiMoteController implements WiimoteListener {
 
 				if(getPlayers().get(player).getAmountIR() > 0)
 				{
-					Point2D.Double point = new Point2D.Double(getPlayers().get(player).getIrsource()[0].getX(), getPlayers().get(player).getIrsource()[0].getY());
-					int dist = (int) point.distance(new Point2D.Double(512, 384));
-					getPlayers().get(player).hit(dist);
-
-					//				try{getPlayers().get(player+1).setDeaths(getPlayers().get(player+1).getDeaths() + 1);}
-					//				
-					//				catch(Exception e){
-					//					try{
-					//					getPlayers().get(player-1).setDeaths(getPlayers().get(player-1).getDeaths() + 1);} catch(Exception e1){}
-					//				}
-					switch(player)
+					for(int i = 0; i < getPlayers().get(player).getAmountIR(); i++)
 					{
-					case 0:
-						try{getPlayers().get(1).setDeaths(getPlayers().get(1).getDeaths() + 1);} catch(Exception e1){}
-						break;
-					case 1:
-						try{getPlayers().get(0).setDeaths(getPlayers().get(0).getDeaths() + 1);} catch(Exception e1){}
-						break;
-					case 2:
-						try{getPlayers().get(0).setDeaths(getPlayers().get(0).getDeaths() + 1);} catch(Exception e1){}
-						break;
-					default: break;
-					}}
+						Point2D.Double point = new Point2D.Double(getPlayers().get(player).getIrsource()[i].getX(), getPlayers().get(player).getIrsource()[i].getY());
+						int dist = (int) point.distance(new Point2D.Double(512, 384));
+						getPlayers().get(player).hit(dist);
+
+						//				try{getPlayers().get(player+1).setDeaths(getPlayers().get(player+1).getDeaths() + 1);}
+						//				
+						//				catch(Exception e){
+						//					try{
+						//					getPlayers().get(player-1).setDeaths(getPlayers().get(player-1).getDeaths() + 1);} catch(Exception e1){}
+						//				}
+						switch(player)
+						{
+						case 0:
+							try{getPlayers().get(1).setDeaths(getPlayers().get(1).getDeaths() + 1);} catch(Exception e1){}
+							break;
+						case 1:
+							try{getPlayers().get(0).setDeaths(getPlayers().get(0).getDeaths() + 1);} catch(Exception e1){}
+							break;
+						case 2:
+							try{getPlayers().get(0).setDeaths(getPlayers().get(0).getDeaths() + 1);} catch(Exception e1){}
+							break;
+						default: break;
+						}}
+
+				}
+				//				try{getPlayers().get(player+1).setDeaths(getPlayers().get(player+1).getDeaths() + 1);}
+				//				
+				//				catch(Exception e){
+				//					try{
+				//					getPlayers().get(player-1).setDeaths(getPlayers().get(player-1).getDeaths() + 1);} catch(Exception e1){}
+				//				}
 			}
+
 			else
 			{
 				model.playEmpty();
@@ -156,6 +169,9 @@ public class WiiMoteController implements WiimoteListener {
 		if(arg0.isButtonBJustReleased())
 		{
 			buttonPressed = false;
+			getPlayers().get(player).setAmountIR(0);
+			getPlayers().get(player).setIrsource(null);
+
 		}
 	}
 
@@ -238,7 +254,7 @@ public class WiiMoteController implements WiimoteListener {
 		getPlayers().get(player).setIrsource(arg0.getIRPoints());
 
 		System.out.println(times.size());
-		
+
 		times.add(System.currentTimeMillis());
 	}
 
@@ -246,16 +262,12 @@ public class WiiMoteController implements WiimoteListener {
 	{
 		double freq = 0;
 
+
 		for(int i = 1; i < times.size(); i ++)
 		{
 			if(times.size() > 100)
 			{
 				times.removeFirst();
-			}
-			
-			if(times.size() == 1)
-			{
-				/*sum += times.get(i);*/
 			}
 
 			else if(times.size() == 0)
@@ -263,17 +275,12 @@ public class WiiMoteController implements WiimoteListener {
 				//Do nothing
 			}
 
-			else if(times.size() > 99)
-			{
-				sum += times.get(i) - times.get(i-1);
-			}
-
 			else if(times.size() > 1 && times.size() < 100)
 			{
 				sum += times.get(i) - times.get(i-1);
 			}
 
-			total ++;
+			total++;
 		}
 
 		if (total!= 0) 
@@ -288,6 +295,7 @@ public class WiiMoteController implements WiimoteListener {
 		sum = 0;
 		total = 0;
 		return 1 / freq;
+
 	}
 
 	public IRSource[] getIrlightsP1() {
@@ -451,6 +459,7 @@ public class WiiMoteController implements WiimoteListener {
 
 	public void playerKilled(int playernr)
 	{
+		//48 ascii is 0
 		int send = 48 + playernr;
 		try 
 		{

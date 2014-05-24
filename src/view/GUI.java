@@ -52,19 +52,16 @@ public class GUI
 		
 		for(int i = 1; i <= playersnmb; i++)
 		{
-			String name = JOptionPane.showInputDialog("Enter name player " + i + ": ");
+			String name = JOptionPane.showInputDialog("Naam speler " + i + ": ");
 			names.add(name);
-			System.out.println("Name Added");
 		}
 		
-		JOptionPane.showMessageDialog(frame, "Houdt uw WiiMotes uit het licht en klik op 'OK' ");
+		JOptionPane.showMessageDialog(frame, "Houdt uw WiiMotes naar beneden gericht en klik op 'OK' ");
 		int idx = 0;
 		while(idx < playersnmb)
 		{
 			panels.add(new EllipsePanel(names.get(idx), idx));
 			panels.get(idx).setPreferredSize(new Dimension(1425, 360));
-			System.out.println(panels.size());
-			System.out.println("Panel Added");
 			idx++;
 		}
 		
@@ -72,7 +69,6 @@ public class GUI
 		for(int s = 0; s<panels.size(); s++)
 		{
 			centerPanel.add(panels.get(s));
-			System.out.println("Pannel added to centerPanel");
 		}
 		
 		frame.getContentPane().add(BorderLayout.CENTER, centerPanel);
