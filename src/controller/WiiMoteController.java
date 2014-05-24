@@ -57,6 +57,7 @@ public class WiiMoteController implements WiimoteListener {
 	private LinkedList<Long> times = new LinkedList<Long>();
 	private double sum = 0;
 	private double total = 0;
+	private double freq = 0;
 
 
 	//For communication Arduino
@@ -98,7 +99,7 @@ public class WiiMoteController implements WiimoteListener {
 		}
 
 		//connect to Arduino
-		connectArduino("COM10");
+		//connectArduino("COM10");
 
 
 	}
@@ -253,6 +254,7 @@ public class WiiMoteController implements WiimoteListener {
 		getPlayers().get(player).setAmountIR(arg0.getIRPoints().length);
 		getPlayers().get(player).setIrsource(arg0.getIRPoints());
 
+		System.out.println("-----------------------------------------------------------------------------------------------------------------------");
 		System.out.println(times.size());
 
 		times.add(System.currentTimeMillis());
@@ -260,30 +262,24 @@ public class WiiMoteController implements WiimoteListener {
 
 	public double getFrequency()
 	{
-		double freq = 0;
-
-
 		for(int i = 1; i < times.size(); i ++)
 		{
 			if(times.size() > 100)
 			{
 				times.removeFirst();
-			}
-
-			else if(times.size() == 0)
-			{
-				//Do nothing
+				total++;
 			}
 
 			else if(times.size() > 1 && times.size() < 100)
 			{
 				sum += times.get(i) - times.get(i-1);
+				total++;
 			}
-
-			total++;
+			
+			System.out.println(times.get(i));
 		}
 
-		if (total!= 0) 
+		if (total!= 0)
 		{
 			freq = sum / total;
 		}
@@ -294,7 +290,7 @@ public class WiiMoteController implements WiimoteListener {
 		}
 		sum = 0;
 		total = 0;
-		return 1 / freq;
+		return freq;
 
 	}
 
