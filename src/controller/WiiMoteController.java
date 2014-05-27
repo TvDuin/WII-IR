@@ -3,6 +3,9 @@ package controller;
 import java.awt.geom.Point2D;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Queue;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -51,9 +54,9 @@ public class WiiMoteController implements WiimoteListener {
 	private ArrayList<Player> players = new ArrayList<Player>();
 	private boolean buttonPressed;
 
-	private ArrayList<Long> times = new ArrayList<Long>();
-	private int sum = 0;
-	private int index = 1;
+	private LinkedList<Long> times = new LinkedList<Long>();
+	private double sum = 0;
+	private double total = 0;
 
 
 	//For communication Arduino
@@ -97,7 +100,7 @@ public class WiiMoteController implements WiimoteListener {
 		//connect to Arduino
 		try{connectArduino("COM10");}
 		catch(Exception e){ e.printStackTrace(); System.out.println("Niet verbonden met Arduino!!");}
-		
+
 
 	}
 
@@ -126,33 +129,39 @@ public class WiiMoteController implements WiimoteListener {
 				{
 					for(int i = 0; i < getPlayers().get(player).getAmountIR(); i++)
 					{
-					Point2D.Double point = new Point2D.Double(getPlayers().get(player).getIrsource()[i].getX(), getPlayers().get(player).getIrsource()[i].getY());
-					int dist = (int) point.distance(new Point2D.Double(512, 384));
-					getPlayers().get(player).hit(dist);
-					}
-//				try{getPlayers().get(player+1).setDeaths(getPlayers().get(player+1).getDeaths() + 1);}
-//				
-//				catch(Exception e){
-//					try{
-//					getPlayers().get(player-1).setDeaths(getPlayers().get(player-1).getDeaths() + 1);} catch(Exception e1){}
-//				}
-				switch(player)
-				{
-				case 0:
-					try{getPlayers().get(1).setDeaths(getPlayers().get(1).getDeaths() + 1); } catch(Exception e1){}
-					playerKilled(1);
-					break;
-				case 1:
-					try{getPlayers().get(0).setDeaths(getPlayers().get(0).getDeaths() + 1);} catch(Exception e1){}
-					playerKilled(2);
-					break;
-				case 2:
-					try{getPlayers().get(0).setDeaths(getPlayers().get(0).getDeaths() + 1);} catch(Exception e1){}
-					playerKilled(2);
-					break;
-				default: break;
-				}}
+						Point2D.Double point = new Point2D.Double(getPlayers().get(player).getIrsource()[i].getX(), getPlayers().get(player).getIrsource()[i].getY());
+						int dist = (int) point.distance(new Point2D.Double(512, 384));
+						getPlayers().get(player).hit(dist);
+
+						//				try{getPlayers().get(player+1).setDeaths(getPlayers().get(player+1).getDeaths() + 1);}
+						//				
+						//				catch(Exception e){
+						//					try{
+						//					getPlayers().get(player-1).setDeaths(getPlayers().get(player-1).getDeaths() + 1);} catch(Exception e1){}
+						//				}
+						switch(player)
+						{
+						case 0:
+							try{getPlayers().get(1).setDeaths(getPlayers().get(1).getDeaths() + 1);} catch(Exception e1){}
+							break;
+						case 1:
+							try{getPlayers().get(0).setDeaths(getPlayers().get(0).getDeaths() + 1);} catch(Exception e1){}
+							break;
+						case 2:
+							try{getPlayers().get(0).setDeaths(getPlayers().get(0).getDeaths() + 1);} catch(Exception e1){}
+							break;
+						default: break;
+						}}
+
+				}
+				//				try{getPlayers().get(player+1).setDeaths(getPlayers().get(player+1).getDeaths() + 1);}
+				//				
+				//				catch(Exception e){
+				//					try{
+				//					getPlayers().get(player-1).setDeaths(getPlayers().get(player-1).getDeaths() + 1);} catch(Exception e1){}
+				//				}
 			}
+
 			else
 			{
 				model.playEmpty();
@@ -163,7 +172,7 @@ public class WiiMoteController implements WiimoteListener {
 			buttonPressed = false;
 			getPlayers().get(player).setAmountIR(0);
 			getPlayers().get(player).setIrsource(null);
-			
+
 		}
 	}
 
@@ -245,46 +254,48 @@ public class WiiMoteController implements WiimoteListener {
 		getPlayers().get(player).setAmountIR(arg0.getIRPoints().length);
 		getPlayers().get(player).setIrsource(arg0.getIRPoints());
 
+		System.out.println(times.size());
 
-		//frequency check
-		for(int i = 0; i < 20; i ++)
-		{
-			if(arg0.getIRPoints().length != 0)
-			{
-				timeInMillis = System.currentTimeMillis();
-
-				while(newIRFound == false)
-				{
-					if(arg0.getIRPoints().length != 0)
-					{
-						newTimeInMillis = System.currentTimeMillis();
-						newIRFound = true;
-					}
-				}
-
-				newIRFound = false;
-			}
-
-			times.add(newTimeInMillis - timeInMillis);
-		}
-		//End of frequency check
+		times.add(System.currentTimeMillis());
 	}
 
-	public int getFrequency()
+	public double getFrequency()
 	{
-		int freq = 0;
+		double freq = 0;
 
-		for(int i = 0; i < times.size(); i ++)
+
+		for(int i = 1; i < times.size(); i ++)
 		{
-			sum += times.get(i);
-			index ++;
+			if(times.size() > 100)
+			{
+				times.removeFirst();
+			}
+
+			else if(times.size() == 0)
+			{
+				//Do nothing
+			}
+
+			else if(times.size() > 1 && times.size() < 100)
+			{
+				sum += times.get(i) - times.get(i-1);
+			}
+
+			total++;
 		}
 
-		freq = sum/index;
-		sum = 0;
-		index = 1;
+		if (total!= 0) 
+		{
+			freq = sum / total;
+		}
 
-		return freq;
+		else
+		{
+			freq = 1;
+		}
+		sum = 0;
+		total = 0;
+		return 1 / freq;
 
 	}
 
