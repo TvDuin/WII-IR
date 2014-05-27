@@ -29,7 +29,8 @@ import wiiusej.wiiusejevents.wiiuseapievents.ClassicControllerRemovedEvent;
 import wiiusej.wiiusejevents.wiiuseapievents.DisconnectionEvent;
 import wiiusej.wiiusejevents.wiiuseapievents.GuitarHeroInsertedEvent;
 import wiiusej.wiiusejevents.wiiuseapievents.GuitarHeroRemovedEvent;
-import wiiusej.wiiusejevents.wiiuseapievents.NunchukInsertedEvent;
+import wiiusej.
+wiiusejevents.wiiuseapievents.NunchukInsertedEvent;
 import wiiusej.wiiusejevents.wiiuseapievents.NunchukRemovedEvent;
 import wiiusej.wiiusejevents.wiiuseapievents.StatusEvent;
 import gnu.io.CommPortIdentifier;
@@ -132,23 +133,16 @@ public class WiiMoteController implements WiimoteListener {
 						Point2D.Double point = new Point2D.Double(getPlayers().get(player).getIrsource()[i].getX(), getPlayers().get(player).getIrsource()[i].getY());
 						int dist = (int) point.distance(new Point2D.Double(512, 384));
 						getPlayers().get(player).hit(dist);
-
-						//				try{getPlayers().get(player+1).setDeaths(getPlayers().get(player+1).getDeaths() + 1);}
-						//				
-						//				catch(Exception e){
-						//					try{
-						//					getPlayers().get(player-1).setDeaths(getPlayers().get(player-1).getDeaths() + 1);} catch(Exception e1){}
-						//				}
 						switch(player)
 						{
 						case 0:
-							try{getPlayers().get(1).setDeaths(getPlayers().get(1).getDeaths() + 1);} catch(Exception e1){}
+							try{getPlayers().get(1).setDeaths(getPlayers().get(1).getDeaths() + 1); playerKilled(1);} catch(Exception e1){}
 							break;
 						case 1:
-							try{getPlayers().get(0).setDeaths(getPlayers().get(0).getDeaths() + 1);} catch(Exception e1){}
+							try{getPlayers().get(0).setDeaths(getPlayers().get(0).getDeaths() + 1); playerKilled(2);} catch(Exception e1){}
 							break;
 						case 2:
-							try{getPlayers().get(0).setDeaths(getPlayers().get(0).getDeaths() + 1);} catch(Exception e1){}
+							try{getPlayers().get(0).setDeaths(getPlayers().get(0).getDeaths() + 1); playerKilled(2);} catch(Exception e1){}
 							break;
 						default: break;
 						}}
@@ -302,6 +296,7 @@ public class WiiMoteController implements WiimoteListener {
 	public IRSource[] getIrlightsP1() {
 		try{
 			return getPlayers().get(0).getIrsource();}
+		
 		catch(Exception e){return null;}
 	}
 	public IRSource[] getIrlightsP2() {
