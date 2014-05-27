@@ -95,7 +95,8 @@ public class WiiMoteController implements WiimoteListener {
 		}
 
 		//connect to Arduino
-		connectArduino("COM10");
+		try{connectArduino("COM10");}
+		catch(Exception e){ e.printStackTrace(); System.out.println("Niet verbonden met Arduino!!");}
 		
 
 	}
