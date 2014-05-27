@@ -123,7 +123,6 @@ public class WiiMoteController implements WiimoteListener {
 
 				if(getPlayers().get(player).getAmountIR() > 0)
 				{
-					playerKilled(1);
 					for(int i = 0; i < getPlayers().get(player).getAmountIR(); i++)
 					{
 					Point2D.Double point = new Point2D.Double(getPlayers().get(player).getIrsource()[i].getX(), getPlayers().get(player).getIrsource()[i].getY());
@@ -139,13 +138,16 @@ public class WiiMoteController implements WiimoteListener {
 				switch(player)
 				{
 				case 0:
-					try{getPlayers().get(1).setDeaths(getPlayers().get(1).getDeaths() + 1);} catch(Exception e1){}
+					try{getPlayers().get(1).setDeaths(getPlayers().get(1).getDeaths() + 1); } catch(Exception e1){}
+					playerKilled(1);
 					break;
 				case 1:
 					try{getPlayers().get(0).setDeaths(getPlayers().get(0).getDeaths() + 1);} catch(Exception e1){}
+					playerKilled(2);
 					break;
 				case 2:
 					try{getPlayers().get(0).setDeaths(getPlayers().get(0).getDeaths() + 1);} catch(Exception e1){}
+					playerKilled(2);
 					break;
 				default: break;
 				}}
