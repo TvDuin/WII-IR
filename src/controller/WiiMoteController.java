@@ -10,6 +10,7 @@ import java.util.Queue;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
+import javax.swing.Timer;
 
 import model.Player;
 import model.WiiMoteModel;
@@ -59,6 +60,8 @@ public class WiiMoteController implements WiimoteListener {
 	private double sum = 0;
 	private double total = 0;
 	private double freq = 0;
+	private boolean seen = false;
+	private long tempTime = 0;
 
 
 	//For communication Arduino
@@ -100,10 +103,8 @@ public class WiiMoteController implements WiimoteListener {
 		}
 
 		//connect to Arduino
-		//connectArduino("COM10");
+		try{connectArduino("COM10"); System.out.println("Verbonden met Arduino!");}
 		catch(Exception e){ e.printStackTrace(); System.out.println("Niet verbonden met Arduino!!");}
-
-
 	}
 
 
@@ -130,36 +131,29 @@ public class WiiMoteController implements WiimoteListener {
 				if(getPlayers().get(player).getAmountIR() > 0)
 				{
 					for(int i = 0; i < getPlayers().get(player).getAmountIR(); i++)
-					{
-						Point2D.Double point = new Point2D.Double(getPlayers().get(player).getIrsource()[i].getX(), getPlayers().get(player).getIrsource()[i].getY());
-						int dist = (int) point.distance(new Point2D.Double(512, 384));
-						getPlayers().get(player).hit(dist);
-						switch(player)
-						{
-						case 0:
-							try{getPlayers().get(1).setDeaths(getPlayers().get(1).getDeaths() + 1); playerKilled(1);} catch(Exception e1){}
-							break;
-						case 1:
-							try{getPlayers().get(0).setDeaths(getPlayers().get(0).getDeaths() + 1); playerKilled(2);} catch(Exception e1){}
-							break;
-						case 2:
-							try{getPlayers().get(0).setDeaths(getPlayers().get(0).getDeaths() + 1); playerKilled(2);} catch(Exception e1){}
-							break;
-						default: break;
-						}}
+					{ ////
+						try{
+							Point2D.Double point = new Point2D.Double(getPlayers().get(player).getIrsource()[i].getX(), 
+									getPlayers().get(player).getIrsource()[i].getY());
+							int dist = (int) point.distance(new Point2D.Double(512, 384));
+							getPlayers().get(player).hit(dist);
+							//switch(player)
+							//{
+							int playerShot = getPlayers().get(player).getPlayerSeen();
+							//case 0:
+							try{
+								getPlayers().get(playerShot-1).setDeaths(getPlayers().get(playerShot-1).getDeaths() + 1); playerKilled(playerShot);
+							} 
+							catch(Exception e1){}
+						}
+						catch(Exception e2){}
 
+					}
 				}
-				//				try{getPlayers().get(player+1).setDeaths(getPlayers().get(player+1).getDeaths() + 1);}
-				//				
-				//				catch(Exception e){
-				//					try{
-				//					getPlayers().get(player-1).setDeaths(getPlayers().get(player-1).getDeaths() + 1);} catch(Exception e1){}
-				//				}
-			}
-
-			else
-			{
-				model.playEmpty();
+				else
+				{
+					model.playEmpty();
+				}
 			}
 		}
 		if(arg0.isButtonBJustReleased())
@@ -242,61 +236,31 @@ public class WiiMoteController implements WiimoteListener {
 	public void onIrEvent(IREvent arg0) {
 
 		int player = arg0.getWiimoteId()-1;
-
-		long timeInMillis = 0;
-		long newTimeInMillis = 0;
-		boolean newIRFound = false;
-		getPlayers().get(player).setAmountIR(arg0.getIRPoints().length);
+		if(getPlayers().get(player).getAmountIR() == 0)
+			getPlayers().get(player).setAmountIR(arg0.getIRPoints().length);
+		
 		getPlayers().get(player).setIrsource(arg0.getIRPoints());
-
-		System.out.println("-----------------------------------------------------------------------------------------------------------------------");
-		System.out.println(times.size());
-
-		times.add(System.currentTimeMillis());
-	}
-
-	public double getFrequency()
-	{
-		for(int i = 1; i < times.size(); i ++)
-		{
-			if(times.size() > 100)
-			{
-				times.removeFirst();
-				total++;
-			}
-
-			else if(times.size() > 1 && times.size() < 100)
-			{
-				sum += times.get(i) - times.get(i-1);
-				total++;
-			}
-			
-			System.out.println(times.get(i));
-		}
-
-		if (total!= 0)
-		{
-			freq = sum / total;
-		}
-
-		else
-		{
-			freq = 1;
-		}
-		sum = 0;
-		total = 0;
-		return freq;
+		getPlayers().get(player).addTime(System.currentTimeMillis());
+		/*
+		 * 1000  = 1 Seconde uit 
+		 * 100 = 0.1 Seconde uit
+		 * 10 = 0.01 Seconde uit
+		 * 1 = 0.001 Seconde uit
+		 * 
+		 */
 
 	}
+	//System.out.println("----------------------------------------------------------------------------------------------------"+times.size());
+
 
 	public IRSource[] getIrlightsP1() {
 		try{
 			return getPlayers().get(0).getIrsource();}
-		
+
 		catch(Exception e){return null;}
 	}
 	public IRSource[] getIrlightsP2() {
-		try{
+		try{ 
 			return getPlayers().get(1).getIrsource();}
 		catch(Exception e){return null;}
 	}
@@ -456,6 +420,7 @@ public class WiiMoteController implements WiimoteListener {
 		try 
 		{
 			output.write(send);
+			System.out.println("Verstuurd: " + send);
 		} 
 		catch (IOException e) 
 		{
