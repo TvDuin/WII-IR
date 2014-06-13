@@ -41,11 +41,11 @@ public class Player {
 
 			//System.out.println("Verschil: " + difference);
 			//System.out.println("Size: " + times.size());
-			if(difference > 2 && difference < 900) //Dan is led uit voor korte tijd (zelfde speler)
+			if(difference > 2 && difference < 500) //900//Dan is led uit voor korte tijd (zelfde speler)
 			{ 
 				seen = false; //Led is uit geweest
 			}
-			else if(difference > 1000) //Dan is led uit voor 10 seconde (speler weg geweest)
+			else if(difference > 500) //1000 //Dan is led uit voor 10 seconde (speler weg geweest)
 			{ 
 				seen = false; //Led is uit geweest
 				times.clear(); //leeg arraylist
@@ -100,6 +100,11 @@ public class Player {
 	{
 
 	}
+	
+	public void cleatTimes()
+	{
+		times.clear();
+	}
 	public int getScore() {
 		return score;
 	}
@@ -124,7 +129,7 @@ public class Player {
 			this.score += 50;
 		else if(dist <= 700)
 			this.score += 10;
-
+		
 		hits++;
 
 		//	this.score = getScore() + a;

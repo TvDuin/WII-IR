@@ -142,7 +142,9 @@ public class WiiMoteController implements WiimoteListener {
 							int playerShot = getPlayers().get(player).getPlayerSeen();
 							//case 0:
 							try{
-								getPlayers().get(playerShot-1).setDeaths(getPlayers().get(playerShot-1).getDeaths() + 1); playerKilled(playerShot);
+								playerKilled(playerShot);
+								getPlayers().get(playerShot-1).setDeaths(getPlayers().get(playerShot-1).getDeaths() + 1);
+								getPlayers().get(playerShot-1).cleatTimes();
 							} 
 							catch(Exception e1){}
 						}

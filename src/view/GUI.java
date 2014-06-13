@@ -60,6 +60,9 @@ public class GUI
 		int idx = 0;
 		while(idx < playersnmb)
 		{
+			
+			
+			EllipsePanel p = new EllipsePanel(names.get(idx), idx);
 			panels.add(new EllipsePanel(names.get(idx), idx));
 			panels.get(idx).setPreferredSize(new Dimension(1425, 360));
 			idx++;
@@ -103,6 +106,9 @@ class EllipsePanel extends JPanel implements ActionListener
 		this.name = name;
 		t.start();
 	}
+	
+	
+	
 	
 	
 	public void paintComponent(Graphics g)
